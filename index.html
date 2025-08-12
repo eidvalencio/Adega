@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
@@ -254,7 +254,7 @@
                 for (let attempt = 0; attempt < maxRetries; attempt++) {
                     this.updateMonitorDisplay('processing');
                     const currentKey = this.keys[this.currentIndex];
-                    const apiUrl = \`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=\${currentKey}\`;
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${currentKey}`;
                     
                     try {
                         const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
@@ -262,12 +262,12 @@
                             this.rotateToNextKey();
                             continue;
                         }
-                        if (!response.ok) throw new Error(\`Erro na API: \${response.status}\`);
+                        if (!response.ok) throw new Error(`Erro na API: ${response.status}`);
                         
                         this.updateMonitorDisplay('idle');
                         return await response.json();
                     } catch (error) {
-                        console.error(\`Erro na tentativa \${attempt + 1} com a chave \${this.currentIndex}:\`, error);
+                        console.error(`Erro na tentativa ${attempt + 1} com a chave ${this.currentIndex}:`, error);
                         if (attempt < maxRetries - 1) this.rotateToNextKey();
                     }
                 }
@@ -334,7 +334,7 @@
             const result = await apiCarousel.makeRequest(payload);
             if (result.candidates && result.candidates[0].content.parts.length > 0) {
                 let textResponse = result.candidates[0].content.parts[0].text;
-                const jsonMatch = textResponse.match(/\`\`\`json\\s*([\\s\\S]*?)\\s*\`\`\`/);
+                const jsonMatch = textResponse.match(/```json\s*([\s\S]*?)\s*```/);
                 return jsonMatch ? jsonMatch[1] : textResponse;
             }
             throw new Error("A IA não retornou uma resposta válida.");
@@ -348,27 +348,27 @@
             const name = (wineInfo.wineName || '').trim().toLowerCase();
             const grape = (wineInfo.grape || 'desconhecida').trim().toLowerCase();
             const year = wineInfo.year || 0;
-            return \`\${name}-\${grape}-\${year}\`;
+            return `${name}-${grape}-${year}`;
         }
 
         function renderWineList(wines) {
             wineList.innerHTML = '';
-            emptyMessage.classList.toggle('hidden', wines.length > 0);
+            emptyMessage.classList.toggle('hidden', wines.length === 0);
 
             wines.sort((a, b) => (a.wineName || '').localeCompare(b.wineName || '')).forEach(wine => {
                 const wineElement = document.createElement('div');
                 wineElement.className = 'bg-stone-900 bg-opacity-60 p-4 rounded-xl flex justify-between items-center transition-all duration-300 hover:bg-opacity-80 hover:scale-[1.02] cursor-pointer shadow-md border-l-4 border-red-700';
                 wineElement.onclick = () => showStockWineDetails(wine);
-                wineElement.innerHTML = \`
+                wineElement.innerHTML = `
                     <div>
-                        <p class="font-bold text-lg text-white">\${wine.wineName || 'Nome Desconhecido'} \${wine.year ? \`<span class="text-sm text-gray-400">(\${wine.year})</span>\` : ''}</p>
-                        <p class="text-sm text-red-300">\${wine.grape || 'Uva Desconhecida'} - \${wine.region || 'Região Desconhecida'}</p>
+                        <p class="font-bold text-lg text-white">${wine.wineName || 'Nome Desconhecido'} ${wine.year ? `<span class="text-sm text-gray-400">(${wine.year})</span>` : ''}</p>
+                        <p class="text-sm text-red-300">${wine.grape || 'Uva Desconhecida'} - ${wine.region || 'Região Desconhecida'}</p>
                     </div>
                     <div class="flex items-center gap-3">
-                        <span class="bg-red-800 text-white text-sm font-bold w-8 h-8 flex items-center justify-center rounded-full">\${wine.quantity}</span>
+                        <span class="bg-red-800 text-white text-sm font-bold w-8 h-8 flex items-center justify-center rounded-full">${wine.quantity}</span>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" /></svg>
                     </div>
-                \`;
+                `;
                 wineList.appendChild(wineElement);
             });
         }
@@ -523,44 +523,3 @@
     <\/script>
 </body>
 </html>
-`;
-
-        generateBtn.addEventListener('click', () => {
-            const firebaseConfigRaw = document.getElementById('firebaseConfig').value;
-            const apiKey1 = document.getElementById('apiKey1').value.trim();
-            const apiKey2 = document.getElementById('apiKey2').value.trim();
-
-            if (!firebaseConfigRaw || !apiKey1 || !apiKey2) {
-                alert('Por favor, preencha todos os campos obrigatórios.');
-                return;
-            }
-
-            // Extrai o objeto JSON da string completa
-            const firebaseConfigObject = firebaseConfigRaw.substring(firebaseConfigRaw.indexOf('{'), firebaseConfigRaw.lastIndexOf('}') + 1);
-
-            // Formata as chaves de API para o array
-            const apiKeysArrayString = `const apiKeys = [\n    "${apiKey1}",\n    "${apiKey2}"\n];`;
-            
-            // Formata a configuração do Firebase
-            const firebaseConfigString = `const firebaseConfig = ${firebaseConfigObject};`;
-
-            // Substitui os placeholders no template
-            let finalCode = adegaTemplate.replace('// FIREBASE_CONFIG_PLACEHOLDER', firebaseConfigString);
-            finalCode = finalCode.replace('// API_KEYS_PLACEHOLDER', apiKeysArrayString);
-
-            outputCode.value = finalCode;
-            outputSection.classList.remove('hidden');
-            copyFeedback.textContent = '';
-        });
-
-        copyBtn.addEventListener('click', () => {
-            outputCode.select();
-            document.execCommand('copy');
-            copyFeedback.textContent = 'Código copiado para a área de transferência!';
-            setTimeout(() => { copyFeedback.textContent = ''; }, 3000);
-        });
-
-    </script>
-</body>
-</html>
-

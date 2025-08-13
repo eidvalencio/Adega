@@ -53,7 +53,7 @@
         .modal-scale-leave-active { transition: all 200ms ease-in; }
         .modal-scale-enter-from, .modal-scale-leave-to { transform: scale(0.95); opacity: 0; }
         .modal-scale-enter-to, .modal-scale-leave-from { transform: scale(1); opacity: 1; }
-        
+
         /* Scrollbar customizada */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -100,6 +100,25 @@
             <h1 class="font-serif text-5xl md:text-6xl text-white tracking-tight" style="text-shadow: 0 0 20px rgba(220, 38, 38, 0.3);">Adega da Teresinha</h1>
         </header>
 
+        <!-- ======================================================================= -->
+        <!-- INÍCIO DA ADIÇÃO: PAINEL CONTADOR DE VINHOS -->
+        <!-- ======================================================================= -->
+        <div id="wine-counter-panel" class="glass-panel p-4 rounded-2xl shadow-lg mb-8 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <div class="text-4xl">🍷</div>
+                <div>
+                    <h3 class="font-bold text-xl text-white">Total na Adega</h3>
+                    <p class="text-sm text-gray-400">Soma de todas as garrafas</p>
+                </div>
+            </div>
+            <div id="total-wine-count" class="font-serif text-6xl text-red-400 font-bold">
+                0
+            </div>
+        </div>
+        <!-- ======================================================================= -->
+        <!-- FIM DA ADIÇÃO -->
+        <!-- ======================================================================= -->
+
         <!-- Conteúdo Principal que cresce para preencher o espaço -->
         <main id="wine-list-container" class="glass-panel p-4 sm:p-6 rounded-2xl shadow-2xl flex-grow mb-8">
             <h2 class="text-2xl font-bold mb-4 border-b border-gray-700 pb-3 text-white">Meu Estoque de Vinhos</h2>
@@ -136,7 +155,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="fixed bottom-6 right-6 z-20 flex flex-col gap-4">
         <!-- Botões de Ação -->
         <button id="ask-sommelier-btn" title="Converse com o Sommelier" class="bg-red-900 hover:bg-red-800 text-white w-16 h-16 rounded-full flex items-center justify-center cursor-pointer shadow-lg transform hover:scale-110 transition-transform duration-300">
@@ -221,7 +240,7 @@
                 this.keyMonitors.forEach((monitor, index) => {
                     const text = monitor.querySelector('.status-text');
                     const light = monitor.querySelector('.status-light');
-                    
+
                     light.innerHTML = '';
                     light.className = 'status-light w-2.5 h-2.5 rounded-full';
 
@@ -267,7 +286,7 @@
                     this.updateMonitorDisplay('processing');
                     const currentKey = this.keys[this.currentIndex];
                     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${currentKey}`;
-                    
+
                     try {
                         const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                         if (response.status === 429) {
@@ -275,7 +294,7 @@
                             continue;
                         }
                         if (!response.ok) throw new Error(`Erro na API: ${response.status}`);
-                        
+
                         this.updateMonitorDisplay('idle');
                         return await response.json();
                     } catch (error) {
@@ -310,6 +329,8 @@
         const askSommelierBtn = document.getElementById('ask-sommelier-btn');
         const addWineActionBtn = document.getElementById('add-wine-action-btn');
         const apiMonitor = document.getElementById('api-monitor');
+        // ADIÇÃO: Selecionando o elemento do contador
+        const totalWineCountDisplay = document.getElementById('total-wine-count');
 
         // --- ESTADO GLOBAL DA APLICAÇÃO ---
         let currentWines = [];
@@ -369,6 +390,10 @@
             wineList.innerHTML = '';
             emptyMessage.classList.toggle('hidden', wines.length > 0);
 
+            // ADIÇÃO: Lógica para calcular e exibir o total de garrafas
+            const totalQuantity = wines.reduce((sum, wine) => sum + (wine.quantity || 0), 0);
+            totalWineCountDisplay.textContent = totalQuantity;
+
             wines.sort((a, b) => (a.wineName || '').localeCompare(b.wineName || '')).forEach(wine => {
                 const wineElement = document.createElement('div');
                 wineElement.className = 'bg-stone-900 bg-opacity-60 p-4 rounded-xl flex justify-between items-center transition-all duration-300 hover:bg-opacity-80 hover:scale-[1.02] cursor-pointer shadow-md border-l-4 border-red-700';
@@ -423,7 +448,7 @@
             const wines = [...currentWines];
             const newWineFingerprint = createWineFingerprint(wineInfo);
             const existingWineIndex = wines.findIndex(w => createWineFingerprint(w) === newWineFingerprint);
-            
+
             if (existingWineIndex > -1) {
                 wines[existingWineIndex].quantity++;
             } else {
@@ -467,7 +492,7 @@
                 modalContent.innerHTML = ''; // Limpa o conteúdo para evitar eventos duplicados
             }, 200);
         }
-        
+
         function showLoadingModal(text) { loadingText.textContent = text; loadingModal.classList.remove('hidden'); }
         function hideLoadingModal() { loadingModal.classList.add('hidden'); }
 
@@ -504,7 +529,7 @@
             const existingWine = currentWines.find(w => createWineFingerprint(w) === newWineFingerprint);
             const isInStock = !!existingWine;
             const btnClass = "font-bold py-3 px-4 rounded-lg w-full transition-transform transform hover:scale-105";
-            
+
             modalContent.innerHTML = `
                 <button class="close-modal-btn absolute top-4 right-4 text-gray-400 hover:text-white text-3xl leading-none">&times;</button>
                 <h2 class="font-serif text-3xl text-white mb-2">${wineInfo.wineName || 'Nome Desconhecido'} ${wineInfo.year ? `(${wineInfo.year})` : ''}</h2>
@@ -519,9 +544,9 @@
                     </button>
                     ${isInStock ? `<button class="drink-wine-btn bg-green-700 hover:bg-green-600 text-white ${btnClass}">Beber 1 Garrafa</button>` : ''}
                 </div>`;
-            
+
             openModal();
-            
+
             modalContent.querySelector('.close-modal-btn').onclick = closeModal;
             modalContent.querySelector('.add-wine-btn').onclick = () => addWine(wineInfo);
             if (isInStock) {
@@ -543,7 +568,7 @@
                 </div>`;
 
             openModal();
-            
+
             modalContent.querySelector('.close-modal-btn').onclick = closeModal;
             modalContent.querySelector('.tech-sheet-btn').onclick = () => generateTechSheet(wineInfo);
             modalContent.querySelector('.add-wine-btn').onclick = () => addWine(wineInfo);
@@ -594,9 +619,9 @@
                     </form>
                 </div>`;
             openModal();
-            
+
             modalContent.querySelector('.close-modal-btn').onclick = closeModal;
-            
+
             const chatForm = document.getElementById('chat-form');
             chatForm.onsubmit = async (e) => {
                 e.preventDefault();
@@ -648,3 +673,4 @@
     </script>
 </body>
 </html>
+

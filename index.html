@@ -119,6 +119,19 @@
         <!-- FIM DA ADIÇÃO -->
         <!-- ======================================================================= -->
 
+        <!-- NOVAS FUNCIONALIDADES DE IA -->
+        <div class="glass-panel p-4 sm:p-5 rounded-2xl shadow-lg mb-8">
+            <h2 class="text-xl font-bold mb-4 text-white flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg> Ações Inteligentes do Sommelier</h2>
+            <div class="flex flex-wrap gap-3">
+                <button id="btn-surprise-me" class="flex-1 bg-gradient-to-r from-purple-800 to-purple-600 hover:from-purple-700 hover:to-purple-500 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg transform hover:-translate-y-1 transition-all duration-300">
+                    ✨ O que beber hoje?
+                </button>
+                <button id="btn-dinner-planner" class="flex-1 bg-gradient-to-r from-indigo-800 to-indigo-600 hover:from-indigo-700 hover:to-indigo-500 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg transform hover:-translate-y-1 transition-all duration-300">
+                    🍽️ Planejar Jantar
+                </button>
+            </div>
+        </div>
+
         <!-- Conteúdo Principal que cresce para preencher o espaço -->
         <main id="wine-list-container" class="glass-panel p-4 sm:p-6 rounded-2xl shadow-2xl flex-grow mb-8">
             <h2 class="text-2xl font-bold mb-4 border-b border-gray-700 pb-3 text-white">Meu Estoque de Vinhos</h2>
@@ -662,6 +675,90 @@
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
+        // --- NOVAS FUNÇÕES DE IA (SURPRISE ME & DINNER PLANNER) ---
+        async function suggestWineForTonight() {
+            if (currentWines.length === 0) {
+                showErrorModal("Sua adega está vazia! Adicione alguns vinhos primeiro.");
+                return;
+            }
+            showLoadingModal('O Sommelier está escolhendo o vinho perfeito...');
+            try {
+                const stockList = currentWines.map(w => `- ${w.wineName} (${w.grape || 'Uva não informada'}, ${w.year || 'S.A.'})`).join('\n');
+                const prompt = `Atue como um Master Sommelier. Aqui está a minha adega atual:\n${stockList}\n\nEscolha APENAS UM vinho desta lista para eu beber hoje à noite. Crie uma recomendação curta, poética e tentadora (máximo de 3 parágrafos). Diga por que este é o vinho perfeito para hoje, sugerindo o clima ideal (ex: música, companhia, comida). Use formatação HTML básica (<b>, <i>, <br>, <p>) para estruturar o texto de forma elegante. Não use markdown na resposta, retorne apenas o HTML puro.`;
+                const aiResponse = await callGenerativeAI(prompt);
+                
+                modalContent.innerHTML = `
+                    <button class="close-modal-btn absolute top-4 right-4 text-gray-400 hover:text-white text-3xl leading-none">&times;</button>
+                    <h2 class="font-serif text-3xl text-purple-400 mb-4">✨ A Escolha do Sommelier</h2>
+                    <div class="text-gray-300 space-y-4 text-lg leading-relaxed bg-stone-900 bg-opacity-50 p-6 rounded-xl border border-purple-900/50">
+                        ${aiResponse}
+                    </div>`;
+                openModal();
+                modalContent.querySelector('.close-modal-btn').onclick = closeModal;
+            } catch (error) {
+                console.error("Erro na sugestão:", error);
+                showErrorModal(`Erro ao consultar o Sommelier: ${error.message}`);
+            } finally {
+                hideLoadingModal();
+            }
+        }
+
+        function openDinnerPlannerModal() {
+            if (currentWines.length === 0) {
+                showErrorModal("Sua adega está vazia! Adicione vinhos para harmonizar com o jantar.");
+                return;
+            }
+            modalContent.innerHTML = `
+                <button class="close-modal-btn absolute top-4 right-4 text-gray-400 hover:text-white text-3xl leading-none">&times;</button>
+                <h2 class="font-serif text-3xl text-indigo-400 mb-4">🍽️ Planejar um Jantar</h2>
+                <p class="text-gray-300 mb-4">Qual é a ocasião ou o tema do jantar? (ex: Jantar Romântico, Churrasco com Amigos, Noite de Massas)</p>
+                <form id="dinner-form" class="flex flex-col gap-4">
+                    <input type="text" id="dinner-theme-input" class="bg-stone-800 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full" placeholder="Digite o tema do jantar..." required>
+                    <button type="submit" class="bg-indigo-800 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-transform transform hover:scale-105">
+                        ✨ Gerar Menu Harmonizado
+                    </button>
+                </form>
+            `;
+            openModal();
+            modalContent.querySelector('.close-modal-btn').onclick = closeModal;
+            
+            document.getElementById('dinner-form').onsubmit = async (e) => {
+                e.preventDefault();
+                const theme = document.getElementById('dinner-theme-input').value.trim();
+                if (!theme) return;
+                generateDinnerMenu(theme);
+            };
+        }
+
+        async function generateDinnerMenu(theme) {
+            showLoadingModal('Criando um menu inesquecível...');
+            try {
+                const stockList = currentWines.map(w => `- ${w.wineName} (${w.grape || 'Uva não informada'}, ${w.year || 'S.A.'})`).join('\n');
+                const prompt = `Atue como um Chef com estrela Michelin e um Master Sommelier. O usuário vai dar um jantar com o tema: "${theme}".
+Sua tarefa é criar um menu incrível de 3 tempos (Entrada, Prato Principal e Sobremesa).
+A regra de ouro: Você deve harmonizar CADA PRATO OBRIGATORIAMENTE com um dos vinhos disponíveis na adega do usuário listados abaixo:
+\n${stockList}\n
+Para cada prato, descreva a comida de forma apetitosa e explique por que o vinho escolhido da adega harmoniza perfeitamente com os sabores.
+Use formatação HTML para estruturar a resposta (use <h3>, <p>, <ul>, <li>, <strong>, <br>). Não use blocos de código markdown, retorne apenas as tags HTML. Adicione emojis adequados.`;
+                
+                const aiResponse = await callGenerativeAI(prompt);
+                
+                modalContent.innerHTML = `
+                    <button class="close-modal-btn absolute top-4 right-4 text-gray-400 hover:text-white text-3xl leading-none">&times;</button>
+                    <h2 class="font-serif text-3xl text-indigo-400 mb-6">✨ Menu: ${theme}</h2>
+                    <div class="text-gray-300 space-y-6 bg-stone-900 bg-opacity-50 p-6 rounded-xl border border-indigo-900/50 max-h-[60vh] overflow-y-auto custom-scrollbar [&>h3]:text-xl [&>h3]:font-bold [&>h3]:text-white [&>h3]:mt-6 [&>h3]:mb-2 [&>ul]:list-disc [&>ul]:ml-5 [&>p]:mb-2">
+                        ${aiResponse}
+                    </div>`;
+                openModal();
+                modalContent.querySelector('.close-modal-btn').onclick = closeModal;
+            } catch (error) {
+                console.error("Erro no planejamento:", error);
+                showErrorModal(`Erro ao planejar o jantar: ${error.message}`);
+            } finally {
+                hideLoadingModal();
+            }
+        }
+
         // --- EVENT LISTENERS ---
         apiMonitor.addEventListener('click', () => {
             apiMonitor.classList.toggle('is-expanded');
@@ -670,8 +767,10 @@
         cameraInput.addEventListener('change', handleImageUpload);
         galleryInput.addEventListener('change', handleImageUpload);
         askSommelierBtn.addEventListener('click', openChatModal);
+        // ADIÇÕES DE EVENTOS PARA AS NOVAS FUNCIONALIDADES
+        document.getElementById('btn-surprise-me').addEventListener('click', suggestWineForTonight);
+        document.getElementById('btn-dinner-planner').addEventListener('click', openDinnerPlannerModal);
 
     </script>
 </body>
 </html>
-

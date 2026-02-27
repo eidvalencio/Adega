@@ -1,383 +1,8 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Adega da Teresinha</title>
-
-    <!-- Ícones para a tela de início e navegador -->
-    <link rel="apple-touch-icon" sizes="180x180" href="https://placehold.co/180x180/881337/f5f5f4?text=A&font=playfairdisplay">
-    <link rel="icon" type="image/png" sizes="32x32" href="https://placehold.co/32x32/881337/f5f5f4?text=A&font=playfairdisplay">
-    <link rel="icon" type="image/png" sizes="16x16" href="https://placehold.co/16x16/881337/f5f5f4?text=A&font=playfairdisplay">
-
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
-    <style>
-        html, body {
-            height: 100%;
-        }
-        body { 
-            font-family: 'Inter', sans-serif; 
-            color: #f5f5f4; /* stone-100 */
-            background-color: #1c1917; /* stone-900 */
-        }
-        .font-serif { font-family: 'Playfair Display', serif; }
-        .font-cursive { font-family: 'Dancing Script', cursive; }
-
-        /* Fundo de Adega Rústico */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background-image: url('https://images.unsplash.com/photo-1598494834123-a256900bde35?q=80&w=1974&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
-            filter: blur(4px) brightness(0.4);
-            z-index: -1;
-        }
-
-        /* Efeito de Vidro Fosco */
-        .glass-panel {
-            background-color: rgba(28, 25, 23, 0.75); /* stone-900 com 75% de opacidade */
-            backdrop-filter: blur(14px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        /* Animações */
-        .modal-scale-enter-active { transition: all 300ms ease-out; }
-        .modal-scale-leave-active { transition: all 200ms ease-in; }
-        .modal-scale-enter-from, .modal-scale-leave-to { transform: scale(0.95); opacity: 0; }
-        .modal-scale-enter-to, .modal-scale-leave-from { transform: scale(1); opacity: 1; }
-
-        /* Scrollbar customizada */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(127, 29, 29, 0.6); border-radius: 10px; } /* red-800 */
-        ::-webkit-scrollbar-thumb:hover { background: rgba(127, 29, 29, 0.8); }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(167, 139, 250, 0.5); border-radius: 10px; }
-
-        /* Estilos do Monitor de API Interativo */
-        .monitor-wrapper {
-            transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-        .monitor-wrapper:not(.is-expanded) {
-            width: 48px; /* w-12 */
-        }
-        .monitor-wrapper.is-expanded {
-            width: 192px; /* w-48 */
-        }
-        .expanded-view {
-            transition: opacity 0.3s ease-in-out 0.1s;
-        }
-        .monitor-wrapper:not(.is-expanded) .expanded-view {
-            opacity: 0;
-            max-height: 0;
-            visibility: hidden;
-        }
-        #api-monitor.is-expanded .expanded-view {
-            opacity: 1;
-            max-height: 500px; /* Altura suficiente para o conteúdo */
-            visibility: visible;
-        }
-        @keyframes pulse-green {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.7); }
-            50% { box-shadow: 0 0 0 8px rgba(74, 222, 128, 0); }
-        }
-        .light-pulse {
-            animation: pulse-green 2s infinite;
-        }
-    </style>
-</head>
-<body class="antialiased">
-
-    <!-- Container Principal com Flexbox -->
-    <div id="app" class="container mx-auto max-w-3xl p-4 flex flex-col min-h-screen">
-        <header class="text-center my-10 flex-shrink-0">
-            <h1 class="font-serif text-5xl md:text-6xl text-white tracking-tight" style="text-shadow: 0 0 20px rgba(220, 38, 38, 0.3);">Adega da Teresinha</h1>
-        </header>
-
-        <!-- PAINEL CONTADOR DE VINHOS -->
-        <div id="wine-counter-panel" class="glass-panel p-4 rounded-2xl shadow-lg mb-8 flex items-center justify-between">
-            <div class="flex items-center gap-4">
-                <div class="text-4xl">🍷</div>
-                <div>
-                    <h3 class="font-bold text-xl text-white">Total na Adega</h3>
-                    <p class="text-sm text-gray-400">Soma de todas as garrafas</p>
-                </div>
-            </div>
-            <div id="total-wine-count" class="font-serif text-6xl text-red-400 font-bold">
-                0
-            </div>
-        </div>
-
-        <!-- NOVAS FUNCIONALIDADES DE IA -->
-        <div class="glass-panel p-4 sm:p-5 rounded-2xl shadow-lg mb-8">
-            <h2 class="text-xl font-bold mb-4 text-white flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg> Ações Inteligentes do Sommelier</h2>
-            <div class="flex flex-wrap gap-3">
-                <button id="btn-surprise-me" class="flex-1 bg-gradient-to-r from-purple-800 to-purple-600 hover:from-purple-700 hover:to-purple-500 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg transform hover:-translate-y-1 transition-all duration-300">
-                    ✨ O que beber hoje?
-                </button>
-                <button id="btn-dinner-planner" class="flex-1 bg-gradient-to-r from-indigo-800 to-indigo-600 hover:from-indigo-700 hover:to-indigo-500 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 shadow-lg transform hover:-translate-y-1 transition-all duration-300">
-                    🍽️ Planejar Jantar
-                </button>
-            </div>
-        </div>
-
-        <!-- Conteúdo Principal que cresce para preencher o espaço -->
-        <main id="wine-list-container" class="glass-panel p-4 sm:p-6 rounded-2xl shadow-2xl flex-grow mb-8">
-            <h2 class="text-2xl font-bold mb-4 border-b border-gray-700 pb-3 text-white">Meu Estoque de Vinhos</h2>
-            <div id="wine-list" class="space-y-4"></div>
-            <p id="empty-message" class="text-gray-400 text-center py-10 hidden">Sua adega está vazia. Adicione um vinho para começar!</p>
-        </main>
-
-        <!-- Assinatura do Projeto no Rodapé -->
-        <footer class="text-center mt-auto py-6 text-gray-400 flex-shrink-0">
-            <p class="font-cursive text-3xl text-red-200">Thiago Ventura Valencio</p>
-            <p class="text-sm -mt-2">Projeto/Desenvolvimento e teimosia</p>
-            <div class="mt-4 text-xs text-gray-500">
-                <p>Codificação: Gemini / ChatGPT / Qwen</p>
-            </div>
-        </footer>
-    </div>
-
-    <!-- Elementos Flutuantes -->
-    <div class="fixed bottom-6 left-6 z-30">
-        <!-- Monitor de Status Interativo -->
-        <div id="api-monitor" class="monitor-wrapper glass-panel shadow-lg rounded-full flex items-center justify-center h-12 cursor-pointer">
-            <!-- Visão Minimizada (Dial) -->
-            <div class="minimized-view flex items-center justify-center">
-                <div id="minimized-status-light" class="w-4 h-4 rounded-full bg-green-500 transition-colors duration-500 flex items-center justify-center">
-                    <!-- Spinner aparecerá aqui -->
-                </div>
-            </div>
-            <!-- Visão Expandida (Painel) -->
-            <div class="expanded-view opacity-0 p-3 text-xs w-48">
-                <h3 class="font-bold text-gray-300 text-center border-b border-gray-700 pb-1 mb-2">Monitor de IA</h3>
-                <div id="api-key-list" class="space-y-1.5">
-                    <!-- A lista de chaves será gerada aqui pelo JS -->
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="fixed bottom-6 right-6 z-20 flex flex-col gap-4">
-        <!-- Botões de Ação -->
-        <button id="ask-sommelier-btn" title="Converse com o Sommelier" class="bg-red-900 hover:bg-red-800 text-white w-16 h-16 rounded-full flex items-center justify-center cursor-pointer shadow-lg transform hover:scale-110 transition-transform duration-300">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
-        </button>
-        <button id="add-wine-action-btn" title="Adicionar Vinho por Foto" class="bg-red-800 hover:bg-red-700 text-white w-16 h-16 rounded-full flex items-center justify-center cursor-pointer shadow-lg transform hover:scale-110 transition-transform duration-300">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
-        </button>
-        <input type="file" id="camera-input" accept="image/*" capture="environment" class="hidden">
-        <input type="file" id="gallery-input" accept="image/*" class="hidden">
-    </div>
-
-    <!-- Modais -->
-    <div id="modal-backdrop" class="fixed inset-0 bg-black bg-opacity-80 z-40 hidden modal-scale-enter-from"></div>
-    <div id="modal-container" class="fixed inset-0 flex items-center justify-center p-4 z-50 hidden">
-        <div id="modal-content" class="glass-panel rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto p-6 relative modal-scale-enter-from"></div>
-    </div>
-    <div id="loading-modal" class="fixed inset-0 bg-black bg-opacity-75 flex flex-col items-center justify-center z-[60] hidden">
-        <div class="w-16 h-16 border-4 border-t-transparent border-red-400 rounded-full animate-spin"></div>
-        <p id="loading-text" class="text-white mt-4 text-lg">Analisando o rótulo...</p>
-    </div>
-
-    <!-- Firebase SDK -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-        // ===================================================================================
-        // CONFIGURAÇÃO DO FIREBASE PARA: Adega da Teresinha
-        // ===================================================================================
-        const firebaseConfig = {
-          apiKey: "AIzaSyCvYgj-gNRFrUpX3chMl8cfTGzYkx0t6eY",
-          authDomain: "adega-ffb48.firebaseapp.com",
-          projectId: "adega-ffb48",
-          storageBucket: "adega-ffb48.appspot.com",
-          messagingSenderId: "408321300679",
-          appId: "1:408321300679:web:d5f48a9ffa78f7e92946e2"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const adegaDocRef = doc(db, "adegas", "adega-compartilhada");
-
-        // ===================================================================================
-        // MÓDULO DE GERENCIAMENTO DA API (CARROSSEL COM MONITOR UNIFICADO)
-        // ===================================================================================
-        class ApiCarousel {
-            constructor(keys, monitorElement) {
-                if (!keys || keys.length === 0) throw new Error("O carrossel precisa de ao menos uma chave de API.");
-                this.keys = keys;
-                this.currentIndex = 0;
-                this.monitor = monitorElement;
-                this.keyMonitors = [];
-                this.minimizedLight = document.getElementById('minimized-status-light');
-
-                const apiKeyList = this.monitor.querySelector('#api-key-list');
-                apiKeyList.innerHTML = '';
-                this.keys.forEach((key, index) => {
-                    const monitorElement = document.createElement('div');
-                    monitorElement.className = 'flex items-center justify-between text-[10px]';
-                    monitorElement.innerHTML = `
-                        <span class="font-mono text-gray-400">Chave #${index + 1}</span>
-                        <div class="flex items-center gap-1.5">
-                            <span class="status-text font-medium"></span>
-                            <div class="status-light w-2.5 h-2.5 rounded-full"></div>
-                        </div>
-                    `;
-                    apiKeyList.appendChild(monitorElement);
-                    this.keyMonitors.push(monitorElement);
-                });
-                this.updateMonitorDisplay('idle');
-            }
-
-            updateMonitorDisplay(status) {
-                this.keyMonitors.forEach((monitor, index) => {
-                    const text = monitor.querySelector('.status-text');
-                    const light = monitor.querySelector('.status-light');
-
-                    light.innerHTML = '';
-                    light.className = 'status-light w-2.5 h-2.5 rounded-full';
-
-                    if (index === this.currentIndex) {
-                        if (status === 'processing') {
-                            text.textContent = 'PROCESSANDO';
-                            text.className = 'status-text font-medium text-amber-400';
-                            light.innerHTML = `<div class="w-2.5 h-2.5 border-2 border-t-transparent border-amber-400 rounded-full animate-spin"></div>`;
-                        } else {
-                            text.textContent = 'ATIVA';
-                            text.className = 'status-text font-medium text-green-400';
-                            light.classList.add('bg-green-500');
-                        }
-                    } else {
-                        text.textContent = 'RESERVA';
-                        text.className = 'status-text font-medium text-gray-500';
-                        light.classList.add('bg-gray-600');
-                    }
-                });
-
-                this.minimizedLight.innerHTML = '';
-                this.minimizedLight.className = 'w-4 h-4 rounded-full transition-colors duration-500 flex items-center justify-center';
-                this.minimizedLight.classList.remove('light-pulse');
-
-                if (status === 'processing') {
-                    this.minimizedLight.classList.add('bg-amber-500');
-                    this.minimizedLight.innerHTML = `<div class="w-3 h-3 border-2 border-t-transparent border-white rounded-full animate-spin"></div>`;
-                } else {
-                    this.minimizedLight.classList.add('bg-green-500', 'light-pulse');
+return jsonMatch ? jsonMatch[1] : textResponse;
                 }
+                return textResponse;
             }
-
-            rotateToNextKey() {
-                this.currentIndex = (this.currentIndex + 1) % this.keys.length;
-                this.updateMonitorDisplay('idle');
-                console.warn(`Limite da chave anterior atingido. Rotacionando para a chave de índice ${this.currentIndex}.`);
-            }
-
-            async makeRequest(payload) {
-                const maxRetries = this.keys.length;
-                for (let attempt = 0; attempt < maxRetries; attempt++) {
-                    this.updateMonitorDisplay('processing');
-                    const currentKey = this.keys[this.currentIndex];
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${currentKey}`;
-
-                    try {
-                        const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-                        if (response.status === 429) {
-                            this.rotateToNextKey();
-                            continue;
-                        }
-                        if (!response.ok) throw new Error(`Erro na API: ${response.status}`);
-
-                        this.updateMonitorDisplay('idle');
-                        return await response.json();
-                    } catch (error) {
-                        console.error(`Erro na tentativa ${attempt + 1} com a chave ${this.currentIndex}:`, error);
-                        if (attempt < maxRetries - 1) this.rotateToNextKey();
-                    }
-                }
-                this.updateMonitorDisplay('idle');
-                throw new Error("Todas as chaves de API falharam ou estão indisponíveis.");
-            }
-        }
-
-        // ===================================================================================
-        // INICIALIZAÇÃO E CONFIGURAÇÃO DA CHAVE DO USUÁRIO DIVIDIDA EM DUAS PARTES
-        // ===================================================================================
-        const parteChave1 = "AIzaSyASKMuvarCD";
-        const parteChave2 = "heREYARzpNUTGDC7or7Q_q4";
-        const chaveCompletaObfuscada = parteChave1 + parteChave2;
-        
-        const apiKeys = [
-            chaveCompletaObfuscada
-        ];
-        
-        const apiCarousel = new ApiCarousel(apiKeys, document.getElementById('api-monitor'));
-
-        // --- ELEMENTOS DO DOM ---
-        const wineList = document.getElementById('wine-list');
-        const emptyMessage = document.getElementById('empty-message');
-        const cameraInput = document.getElementById('camera-input');
-        const galleryInput = document.getElementById('gallery-input');
-        const modalBackdrop = document.getElementById('modal-backdrop');
-        const modalContainer = document.getElementById('modal-container');
-        const modalContent = document.getElementById('modal-content');
-        const loadingModal = document.getElementById('loading-modal');
-        const loadingText = document.getElementById('loading-text');
-        const askSommelierBtn = document.getElementById('ask-sommelier-btn');
-        const addWineActionBtn = document.getElementById('add-wine-action-btn');
-        const apiMonitor = document.getElementById('api-monitor');
-        const totalWineCountDisplay = document.getElementById('total-wine-count');
-
-        // --- ESTADO GLOBAL DA APLICAÇÃO ---
-        let currentWines = [];
-
-        // ===================================================================================
-        // LÓGICA DE DADOS COM FIREBASE
-        // ===================================================================================
-
-        onSnapshot(adegaDocRef, (doc) => {
-            if (doc.exists() && doc.data().estoque) {
-                currentWines = doc.data().estoque;
-            } else {
-                currentWines = [];
-            }
-            renderWineList(currentWines);
-        });
-
-        async function saveWinesToFirebase(wines) {
-            try {
-                await setDoc(adegaDocRef, { estoque: wines });
-            } catch (error) {
-                console.error("Erro ao salvar vinhos no Firebase: ", error);
-                showErrorModal("Não foi possível sincronizar com a adega na nuvem.");
-            }
-        }
-
-        // ===================================================================================
-        // FUNÇÃO CENTRAL DE CHAMADA DA IA
-        // ===================================================================================
-        async function callGenerativeAI(prompt, base64ImageData = null) {
-            const parts = [{ text: prompt }];
-            if (base64ImageData) {
-                parts.push({ inlineData: { mimeType: "image/jpeg", data: base64ImageData } });
-            }
-            const payload = { contents: [{ parts }] };
-            const result = await apiCarousel.makeRequest(payload);
-            if (result.candidates && result.candidates[0].content.parts.length > 0) {
-                let textResponse = result.candidates[0].content.parts[0].text;
-                const jsonMatch = textResponse.match(/```json\s*([\s\S]*?)\s*```/);
-                return jsonMatch ? jsonMatch[1] : textResponse;
-            }
-            throw new Error("A IA não retornou uma resposta válida.");
+            throw new Error("A IA processou o pedido mas não devolveu texto legível.");
         }
 
         // ===================================================================================
@@ -423,8 +48,11 @@
             try {
                 const base64Image = await toBase64(file);
                 const prompt = `Você é a "Adega Inteligente", uma IA sommelier. Analise a imagem do rótulo de vinho. Extraia as informações e retorne ESTRITAMENTE em formato JSON. O objeto deve ter: "wineName" (string), "grape" (string), "region" (string), "year" (número ou null), "description" (string, max 250 caracteres), "foodPairings" (array de 5 strings). Se não encontrar uma informação, retorne null para o campo correspondente, mas sempre retorne o JSON completo.`;
-                const jsonResponse = await callGenerativeAI(prompt, base64Image);
+                
+                // Agora enviamos 'true' para garantir que a IA nos devolve JSON
+                const jsonResponse = await callGenerativeAI(prompt, base64Image, true);
                 const wineInfo = JSON.parse(jsonResponse);
+                
                 if (wineInfo && wineInfo.wineName) {
                     showScannedWineModal(wineInfo);
                 } else {
@@ -432,7 +60,7 @@
                 }
             } catch (error) {
                 console.error("Erro no processo de upload:", error);
-                showErrorModal(`Ocorreu um erro ao contatar a IA. Detalhes: ${error.message}`);
+                showErrorModal(`Ocorreu um erro ao comunicar com a IA.\n\nDetalhes:\n${error.message}`);
             } finally {
                 hideLoadingModal();
                 cameraInput.value = '';
@@ -582,13 +210,13 @@
             modalContent.innerHTML = `
                 <button class="close-modal-btn absolute top-4 right-4 text-gray-400 hover:text-white text-3xl leading-none">&times;</button>
                 <h2 class="font-serif text-3xl text-red-400 mb-2">Ocorreu um Erro</h2>
-                <p class="text-gray-300">${message}</p>`;
+                <p class="text-gray-300 break-words whitespace-pre-wrap">${message}</p>`;
             openModal();
             modalContent.querySelector('.close-modal-btn').onclick = closeModal;
         }
 
         async function generateTechSheet(wineInfo) {
-            showLoadingModal('Gerando ficha técnica...');
+            showLoadingModal('A gerar ficha técnica...');
             try {
                 const prompt = `Gere uma "ficha técnica" detalhada para o vinho "${wineInfo.wineName} ${wineInfo.year || ''}" da região "${wineInfo.region}" com uva "${wineInfo.grape}". Formate com emojis. Inclua: 🌡️ Temperatura Ideal, ⏳ Potencial de Guarda, 📝 Nota de Prova (visual, olfativo, gustativo), 🧐 Curiosidade, 🌟 Nota Estimada (0-100).`;
                 const techSheetText = await callGenerativeAI(prompt);
@@ -599,7 +227,7 @@
                 modalContent.querySelector('.close-modal-btn').onclick = closeModal;
             } catch (error) {
                 console.error("Erro ao gerar ficha:", error);
-                showErrorModal(`Ocorreu um erro ao contatar a IA: ${error.message}`);
+                showErrorModal(`Ocorreu um erro ao comunicar com a IA.\n\nDetalhes:\n${error.message}`);
             } finally {
                 hideLoadingModal();
             }
@@ -649,7 +277,7 @@
                     const aiResponse = await callGenerativeAI(prompt);
                     addChatMessage(aiResponse, 'ai');
                 } catch (error) {
-                    addChatMessage(`Desculpe, estou com problemas para me conectar. ${error.message}`, 'ai');
+                    addChatMessage(`Desculpe, estou com problemas de ligação. Detalhes: ${error.message}`, 'ai');
                 }
             };
         }
@@ -667,10 +295,10 @@
         // --- NOVAS FUNÇÕES DE IA (SURPRISE ME & DINNER PLANNER) ---
         async function suggestWineForTonight() {
             if (currentWines.length === 0) {
-                showErrorModal("Sua adega está vazia! Adicione alguns vinhos primeiro.");
+                showErrorModal("A sua adega está vazia! Adicione alguns vinhos primeiro.");
                 return;
             }
-            showLoadingModal('O Sommelier está escolhendo o vinho perfeito...');
+            showLoadingModal('O Sommelier está a escolher o vinho perfeito...');
             try {
                 const stockList = currentWines.map(w => `- ${w.wineName} (${w.grape || 'Uva não informada'}, ${w.year || 'S.A.'})`).join('\n');
                 const prompt = `Atue como um Master Sommelier. Aqui está a minha adega atual:\n${stockList}\n\nEscolha APENAS UM vinho desta lista para eu beber hoje à noite. Crie uma recomendação curta, poética e tentadora (máximo de 3 parágrafos). Diga por que este é o vinho perfeito para hoje, sugerindo o clima ideal (ex: música, companhia, comida). Use formatação HTML básica (<b>, <i>, <br>, <p>) para estruturar o texto de forma elegante. Não use markdown na resposta, retorne apenas o HTML puro.`;
@@ -686,7 +314,7 @@
                 modalContent.querySelector('.close-modal-btn').onclick = closeModal;
             } catch (error) {
                 console.error("Erro na sugestão:", error);
-                showErrorModal(`Erro ao consultar o Sommelier: ${error.message}`);
+                showErrorModal(`Erro ao consultar o Sommelier.\n\nDetalhes:\n${error.message}`);
             } finally {
                 hideLoadingModal();
             }
@@ -694,12 +322,12 @@
 
         function openDinnerPlannerModal() {
             if (currentWines.length === 0) {
-                showErrorModal("Sua adega está vazia! Adicione vinhos para harmonizar com o jantar.");
+                showErrorModal("A sua adega está vazia! Adicione vinhos para harmonizar com o jantar.");
                 return;
             }
             modalContent.innerHTML = `
                 <button class="close-modal-btn absolute top-4 right-4 text-gray-400 hover:text-white text-3xl leading-none">&times;</button>
-                <h2 class="font-serif text-3xl text-indigo-400 mb-4">🍽️ Planejar um Jantar</h2>
+                <h2 class="font-serif text-3xl text-indigo-400 mb-4">🍽️ Planear um Jantar</h2>
                 <p class="text-gray-300 mb-4">Qual é a ocasião ou o tema do jantar? (ex: Jantar Romântico, Churrasco com Amigos, Noite de Massas)</p>
                 <form id="dinner-form" class="flex flex-col gap-4">
                     <input type="text" id="dinner-theme-input" class="bg-stone-800 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full" placeholder="Digite o tema do jantar..." required>
@@ -720,7 +348,7 @@
         }
 
         async function generateDinnerMenu(theme) {
-            showLoadingModal('Criando um menu inesquecível...');
+            showLoadingModal('A criar um menu inesquecível...');
             try {
                 const stockList = currentWines.map(w => `- ${w.wineName} (${w.grape || 'Uva não informada'}, ${w.year || 'S.A.'})`).join('\n');
                 const prompt = `Atue como um Chef com estrela Michelin e um Master Sommelier. O usuário vai dar um jantar com o tema: "${theme}".
@@ -741,8 +369,8 @@ Use formatação HTML para estruturar a resposta (use <h3>, <p>, <ul>, <li>, <st
                 openModal();
                 modalContent.querySelector('.close-modal-btn').onclick = closeModal;
             } catch (error) {
-                console.error("Erro no planejamento:", error);
-                showErrorModal(`Erro ao planejar o jantar: ${error.message}`);
+                console.error("Erro no planeamento:", error);
+                showErrorModal(`Erro ao planear o jantar.\n\nDetalhes:\n${error.message}`);
             } finally {
                 hideLoadingModal();
             }

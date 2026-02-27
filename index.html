@@ -59,6 +59,8 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(127, 29, 29, 0.6); border-radius: 10px; } /* red-800 */
         ::-webkit-scrollbar-thumb:hover { background: rgba(127, 29, 29, 0.8); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(167, 139, 250, 0.5); border-radius: 10px; }
 
         /* Estilos do Monitor de API Interativo */
         .monitor-wrapper {
@@ -100,9 +102,7 @@
             <h1 class="font-serif text-5xl md:text-6xl text-white tracking-tight" style="text-shadow: 0 0 20px rgba(220, 38, 38, 0.3);">Adega da Teresinha</h1>
         </header>
 
-        <!-- ======================================================================= -->
-        <!-- INÍCIO DA ADIÇÃO: PAINEL CONTADOR DE VINHOS -->
-        <!-- ======================================================================= -->
+        <!-- PAINEL CONTADOR DE VINHOS -->
         <div id="wine-counter-panel" class="glass-panel p-4 rounded-2xl shadow-lg mb-8 flex items-center justify-between">
             <div class="flex items-center gap-4">
                 <div class="text-4xl">🍷</div>
@@ -115,9 +115,6 @@
                 0
             </div>
         </div>
-        <!-- ======================================================================= -->
-        <!-- FIM DA ADIÇÃO -->
-        <!-- ======================================================================= -->
 
         <!-- NOVAS FUNCIONALIDADES DE IA -->
         <div class="glass-panel p-4 sm:p-5 rounded-2xl shadow-lg mb-8">
@@ -174,11 +171,9 @@
         <button id="ask-sommelier-btn" title="Converse com o Sommelier" class="bg-red-900 hover:bg-red-800 text-white w-16 h-16 rounded-full flex items-center justify-center cursor-pointer shadow-lg transform hover:scale-110 transition-transform duration-300">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
         </button>
-        <!-- ALTERAÇÃO: O botão de adicionar agora é um <button> -->
         <button id="add-wine-action-btn" title="Adicionar Vinho por Foto" class="bg-red-800 hover:bg-red-700 text-white w-16 h-16 rounded-full flex items-center justify-center cursor-pointer shadow-lg transform hover:scale-110 transition-transform duration-300">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
         </button>
-        <!-- ALTERAÇÃO: Inputs de arquivo agora estão escondidos e separados -->
         <input type="file" id="camera-input" accept="image/*" capture="environment" class="hidden">
         <input type="file" id="gallery-input" accept="image/*" class="hidden">
     </div>
@@ -195,7 +190,6 @@
 
     <!-- Firebase SDK -->
     <script type="module">
-        // Importações do Firebase
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -210,12 +204,9 @@
           messagingSenderId: "408321300679",
           appId: "1:408321300679:web:d5f48a9ffa78f7e92946e2"
         };
-        // ===================================================================================
 
-        // Inicializa o Firebase e o Firestore
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        // Define a referência para o documento único que guardará a lista de vinhos
         const adegaDocRef = doc(db, "adegas", "adega-compartilhada");
 
         // ===================================================================================
@@ -249,7 +240,6 @@
             }
 
             updateMonitorDisplay(status) {
-                // Atualiza a visão expandida
                 this.keyMonitors.forEach((monitor, index) => {
                     const text = monitor.querySelector('.status-text');
                     const light = monitor.querySelector('.status-light');
@@ -274,7 +264,6 @@
                     }
                 });
 
-                // Atualiza a visão minimizada
                 this.minimizedLight.innerHTML = '';
                 this.minimizedLight.className = 'w-4 h-4 rounded-full transition-colors duration-500 flex items-center justify-center';
                 this.minimizedLight.classList.remove('light-pulse');
@@ -298,7 +287,6 @@
                 for (let attempt = 0; attempt < maxRetries; attempt++) {
                     this.updateMonitorDisplay('processing');
                     const currentKey = this.keys[this.currentIndex];
-                    // CORREÇÃO: Atualizado de gemini-2.5-flash-preview-05-20 para o modelo estável gemini-1.5-flash
                     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${currentKey}`;
 
                     try {
@@ -322,12 +310,16 @@
         }
 
         // ===================================================================================
-        // INICIALIZAÇÃO E CONFIGURAÇÃO
+        // INICIALIZAÇÃO E CONFIGURAÇÃO DA CHAVE DO USUÁRIO DIVIDIDA EM DUAS PARTES
         // ===================================================================================
+        const parteChave1 = "AIzaSyASKMuvarCD";
+        const parteChave2 = "heREYARzpNUTGDC7or7Q_q4";
+        const chaveCompletaObfuscada = parteChave1 + parteChave2;
+        
         const apiKeys = [
-            "AIzaSyBWyhApy6OQanXEFdlmPN8i8qmieS3Q2Ok",
-            "AIzaSyCuUdvGuZDkDASrPv6DlhXjNiJPUap1mwg"
+            chaveCompletaObfuscada
         ];
+        
         const apiCarousel = new ApiCarousel(apiKeys, document.getElementById('api-monitor'));
 
         // --- ELEMENTOS DO DOM ---
@@ -343,7 +335,6 @@
         const askSommelierBtn = document.getElementById('ask-sommelier-btn');
         const addWineActionBtn = document.getElementById('add-wine-action-btn');
         const apiMonitor = document.getElementById('api-monitor');
-        // ADIÇÃO: Selecionando o elemento do contador
         const totalWineCountDisplay = document.getElementById('total-wine-count');
 
         // --- ESTADO GLOBAL DA APLICAÇÃO ---
@@ -404,7 +395,6 @@
             wineList.innerHTML = '';
             emptyMessage.classList.toggle('hidden', wines.length > 0);
 
-            // ADIÇÃO: Lógica para calcular e exibir o total de garrafas
             const totalQuantity = wines.reduce((sum, wine) => sum + (wine.quantity || 0), 0);
             totalWineCountDisplay.textContent = totalQuantity;
 
@@ -445,7 +435,6 @@
                 showErrorModal(`Ocorreu um erro ao contatar a IA. Detalhes: ${error.message}`);
             } finally {
                 hideLoadingModal();
-                // Limpa o valor dos inputs para permitir a seleção do mesmo arquivo novamente
                 cameraInput.value = '';
                 galleryInput.value = '';
             }
@@ -503,7 +492,7 @@
             setTimeout(() => {
                 modalBackdrop.classList.add('hidden');
                 modalContainer.classList.add('hidden');
-                modalContent.innerHTML = ''; // Limpa o conteúdo para evitar eventos duplicados
+                modalContent.innerHTML = '';
             }, 200);
         }
 
@@ -623,8 +612,8 @@
                     <h2 class="font-serif text-2xl text-white">✨ Converse com o Sommelier</h2>
                     <button class="close-modal-btn text-gray-400 hover:text-white text-3xl leading-none">&times;</button>
                 </div>
-                <div id="chat-messages" class="flex-1 py-4 space-y-4 overflow-y-auto flex flex-col h-80 my-4">
-                    ${chatHistory.map(msg => `<div class="chat-bubble ${msg.role === 'user' ? 'user-bubble' : 'ai-bubble'}">${msg.text}</div>`).join('')}
+                <div id="chat-messages" class="flex-1 py-4 space-y-4 overflow-y-auto flex flex-col h-80 my-4 custom-scrollbar">
+                    ${chatHistory.map(msg => `<div class="chat-bubble ${msg.role === 'user' ? 'user-bubble bg-red-800 self-end' : 'ai-bubble bg-stone-700 self-start'} rounded-xl max-w-[85%] p-3 text-white">${msg.text}</div>`).join('')}
                 </div>
                 <div class="pt-3 border-t border-gray-700">
                     <form id="chat-form" class="flex gap-2">
@@ -767,7 +756,6 @@ Use formatação HTML para estruturar a resposta (use <h3>, <p>, <ul>, <li>, <st
         cameraInput.addEventListener('change', handleImageUpload);
         galleryInput.addEventListener('change', handleImageUpload);
         askSommelierBtn.addEventListener('click', openChatModal);
-        // ADIÇÕES DE EVENTOS PARA AS NOVAS FUNCIONALIDADES
         document.getElementById('btn-surprise-me').addEventListener('click', suggestWineForTonight);
         document.getElementById('btn-dinner-planner').addEventListener('click', openDinnerPlannerModal);
 

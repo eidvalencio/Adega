@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Adega da Teresinha | Premium</title>
 
     <!-- Ícones para a tela de início e navegador -->
@@ -15,19 +15,21 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <style>
         html, body {
             height: 100%;
             scroll-behavior: smooth;
+            /* Evita pull-to-refresh indesejado no mobile */
+            overscroll-behavior-y: none; 
         }
         body { 
             font-family: 'Inter', sans-serif; 
             color: #f5f5f4; 
-            background-color: #0c0a09; /* stone-950 - Fundo mais profundo */
+            background-color: #0c0a09; /* stone-950 */
         }
         .font-serif { font-family: 'Playfair Display', serif; }
-        .font-cursive { font-family: 'Dancing Script', cursive; }
 
         /* Fundo de Adega Imersivo */
         body::before {
@@ -38,172 +40,147 @@
             background-image: url('https://images.unsplash.com/photo-1598494834123-a256900bde35?q=80&w=1974&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
-            filter: blur(8px) brightness(0.25);
+            filter: blur(8px) brightness(0.20);
             z-index: -1;
         }
 
         /* Efeito Glassmorphism Premium */
         .glass-panel {
-            background: linear-gradient(135deg, rgba(28, 25, 23, 0.7) 0%, rgba(12, 10, 9, 0.8) 100%);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: linear-gradient(135deg, rgba(28, 25, 23, 0.75) 0%, rgba(12, 10, 9, 0.85) 100%);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.8);
         }
         
         .glass-card {
-            background: linear-gradient(145deg, rgba(41, 37, 36, 0.6) 0%, rgba(28, 25, 23, 0.8) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: linear-gradient(145deg, rgba(41, 37, 36, 0.65) 0%, rgba(28, 25, 23, 0.85) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
         }
         
-        .glass-card:hover {
-            transform: translateY(-6px) scale(1.02);
-            border-color: rgba(159, 18, 57, 0.4); /* border-red-800 */
-            box-shadow: 0 20px 40px -10px rgba(153, 27, 27, 0.5);
+        .glass-card:active {
+            transform: scale(0.97);
+            border-color: rgba(159, 18, 57, 0.5);
         }
 
         /* Animações Suaves */
-        .modal-scale-enter-active { transition: all 400ms cubic-bezier(0.16, 1, 0.3, 1); }
-        .modal-scale-leave-active { transition: all 250ms ease-in; }
-        .modal-scale-enter-from, .modal-scale-leave-to { transform: scale(0.92) translateY(20px); opacity: 0; }
+        .modal-scale-enter-active { transition: all 300ms cubic-bezier(0.16, 1, 0.3, 1); }
+        .modal-scale-leave-active { transition: all 200ms ease-in; }
+        .modal-scale-enter-from, .modal-scale-leave-to { transform: scale(0.95) translateY(15px); opacity: 0; }
         .modal-scale-enter-to, .modal-scale-leave-from { transform: scale(1) translateY(0); opacity: 1; }
 
         /* Scrollbar Invisível/Elegante */
-        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar { width: 3px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(159, 18, 57, 0.4); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(159, 18, 57, 0.8); }
+        ::-webkit-scrollbar-thumb { background: rgba(159, 18, 57, 0.3); border-radius: 10px; }
         
         input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; appearance: none; }
 
         /* Monitor API */
-        .monitor-wrapper { transition: width 0.5s cubic-bezier(0.25, 1, 0.5, 1); }
-        .monitor-wrapper:not(.is-expanded) { width: 44px; }
-        .monitor-wrapper.is-expanded { width: 220px; }
-        .expanded-view { transition: opacity 0.3s ease-in-out 0.1s; }
+        .monitor-wrapper { transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
+        .monitor-wrapper:not(.is-expanded) { width: 40px; }
+        .monitor-wrapper.is-expanded { width: 200px; }
+        .expanded-view { transition: opacity 0.2s ease-in-out 0.1s; }
         .monitor-wrapper:not(.is-expanded) .expanded-view { opacity: 0; max-height: 0; visibility: hidden; }
         #api-monitor.is-expanded .expanded-view { opacity: 1; max-height: 500px; visibility: visible; }
-        @keyframes pulse-api {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.6); }
-            50% { box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
-        }
-        .light-pulse { animation: pulse-api 2s infinite; }
     </style>
 </head>
-<body class="antialiased selection:bg-red-900 selection:text-white">
+<body class="antialiased selection:bg-red-900 selection:text-white pb-24">
 
-    <div id="app" class="container mx-auto max-w-5xl p-4 sm:p-6 lg:p-8 flex flex-col min-h-screen">
+    <div id="app" class="px-3 py-5 mx-auto max-w-lg md:max-w-3xl flex flex-col min-h-screen">
         
-        <!-- Header Luxuoso -->
-        <header class="text-center mt-8 mb-12 flex-shrink-0 relative">
-            <div class="inline-block relative">
-                <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl text-transparent bg-clip-text bg-gradient-to-b from-white via-stone-200 to-stone-400 tracking-tight relative z-10 font-bold" style="filter: drop-shadow(0px 4px 20px rgba(159, 18, 57, 0.8));">Adega da Teresinha</h1>
-                <div class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-red-800 to-transparent opacity-80"></div>
-                <p class="mt-8 font-serif italic text-stone-400 text-lg tracking-widest">A Coleção Privada</p>
-            </div>
+        <!-- Header Premium Compacto Mobile -->
+        <header class="text-center mt-2 mb-6 flex-shrink-0 relative">
+            <h1 class="font-serif text-4xl md:text-5xl text-white tracking-tight font-bold drop-shadow-[0_2px_10px_rgba(159,18,57,0.8)]">
+                Adega da Teresinha
+            </h1>
+            <div class="mx-auto mt-2 w-16 h-0.5 bg-red-800 rounded-full opacity-80"></div>
         </header>
 
-        <!-- Painel de Controle Superior -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-            <!-- Métrica de Estoque -->
-            <div id="wine-counter-panel" class="glass-panel p-6 rounded-3xl flex items-center justify-between md:col-span-1 border-t border-t-white/10 relative overflow-hidden group">
-                <div class="absolute -right-10 -top-10 text-9xl opacity-5 group-hover:scale-110 transition-transform duration-700 pointer-events-none">🍷</div>
-                <div class="flex items-center gap-5 relative z-10">
-                    <div class="w-14 h-14 rounded-full bg-red-900/20 border border-red-900/50 flex items-center justify-center text-3xl shadow-inner">🍷</div>
-                    <div>
-                        <h3 class="font-bold text-xl text-white tracking-wide">Acervo</h3>
-                        <p class="text-xs text-stone-400 uppercase tracking-[0.2em] font-semibold mt-1">Garrafas</p>
-                    </div>
+        <!-- Controle Superior: Cards lado a lado no topo -->
+        <div class="grid grid-cols-2 gap-3 mb-6">
+            <!-- Contador com Garrafas e Rótulos Clarificados -->
+            <div id="wine-counter-panel" class="glass-panel p-4 rounded-2xl flex flex-col items-center justify-center border-t border-t-white/10 relative overflow-hidden">
+                <span class="text-stone-400 text-[10px] uppercase tracking-widest font-semibold mb-1">Total Garrafas</span>
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">🍷</span>
+                    <span id="total-wine-count" class="font-serif text-4xl text-red-400 font-bold leading-none">0</span>
                 </div>
-                <div id="total-wine-count" class="font-serif text-6xl text-transparent bg-clip-text bg-gradient-to-br from-red-400 to-red-700 font-bold relative z-10">0</div>
+                <span class="text-stone-500 text-[9px] uppercase tracking-widest mt-1"><span id="unique-labels-count">0</span> Rótulos Únicos</span>
             </div>
 
-            <!-- Botões Sommelier IA -->
-            <div class="glass-panel p-5 rounded-3xl md:col-span-2 flex flex-col justify-center relative overflow-hidden border-t border-t-white/10">
-                <div class="absolute -right-10 -bottom-10 text-9xl opacity-5 pointer-events-none">✨</div>
-                <h2 class="text-xs font-bold mb-4 text-stone-400 uppercase tracking-[0.2em] flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.8)]"></span>
-                    Master Sommelier IA
-                </h2>
-                <div class="flex flex-col sm:flex-row gap-4 h-full">
-                    <button id="btn-surprise-me" class="flex-1 bg-gradient-to-r from-purple-900/40 to-purple-800/20 hover:from-purple-800/60 hover:to-purple-700/40 border border-purple-500/30 text-white font-medium py-3 px-4 rounded-2xl flex items-center justify-center gap-3 transition-all duration-300 group shadow-lg backdrop-blur-md">
-                        <span class="text-xl group-hover:scale-125 group-hover:rotate-12 transition-transform duration-300">✨</span> Surpreenda-me
-                    </button>
-                    <button id="btn-dinner-planner" class="flex-1 bg-gradient-to-r from-indigo-900/40 to-blue-900/20 hover:from-indigo-800/60 hover:to-blue-800/40 border border-indigo-500/30 text-white font-medium py-3 px-4 rounded-2xl flex items-center justify-center gap-3 transition-all duration-300 group shadow-lg backdrop-blur-md">
-                        <span class="text-xl group-hover:scale-125 group-hover:-rotate-12 transition-transform duration-300">🍽️</span> Harmonizar Jantar
-                    </button>
-                </div>
+            <!-- Botões Sommelier IA (Compactos) -->
+            <div class="glass-panel p-3 rounded-2xl flex flex-col justify-center gap-2 border-t border-t-white/10">
+                <button id="btn-surprise-me" class="flex-1 bg-gradient-to-r from-purple-900/50 to-purple-800/30 border border-purple-500/20 text-white text-[11px] font-semibold rounded-xl flex items-center justify-center gap-2 active:scale-95 transition-transform shadow-md">
+                    <span>✨</span> Escolha Ideal
+                </button>
+                <button id="btn-dinner-planner" class="flex-1 bg-gradient-to-r from-indigo-900/50 to-blue-900/30 border border-indigo-500/20 text-white text-[11px] font-semibold rounded-xl flex items-center justify-center gap-2 active:scale-95 transition-transform shadow-md">
+                    <span>🍽️</span> Harmonizar
+                </button>
             </div>
         </div>
 
-        <!-- Área Principal - Lista de Vinhos -->
-        <main class="glass-panel p-6 sm:p-10 rounded-[2.5rem] shadow-2xl flex-grow mb-12 flex flex-col border-t border-t-white/10">
+        <!-- Área Principal -->
+        <main class="glass-panel p-4 rounded-3xl shadow-2xl flex-grow flex flex-col border-t border-t-white/10 relative">
             
-            <!-- Cabeçalho da Lista e Busca -->
-            <div class="flex flex-col sm:flex-row justify-between items-center mb-8 gap-6 border-b border-stone-800 pb-6">
-                <h2 class="text-3xl font-serif font-bold text-white tracking-wide flex items-center gap-3">
-                    Inventário
-                    <span class="bg-red-900/30 border border-red-900/50 text-red-300 text-xs px-3 py-1 rounded-full font-sans font-medium tracking-widest uppercase">Atualizado</span>
-                </h2>
-                
-                <!-- Barra de Pesquisa Refinada -->
-                <div class="relative w-full sm:w-80 group">
-                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-stone-500 group-focus-within:text-red-400 transition-colors" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                    </div>
-                    <input type="search" id="search-input" class="w-full bg-stone-900/50 border border-stone-700 text-white text-sm rounded-full focus:ring-1 focus:ring-red-800 focus:border-red-800 block pl-12 pr-4 py-3.5 transition-all outline-none placeholder-stone-500 font-medium" placeholder="Buscar por rótulo, uva, origem...">
+            <!-- Barra de Pesquisa Refinada Mobile -->
+            <div class="mb-5 relative w-full group">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <svg class="h-4 w-4 text-stone-500 group-focus-within:text-red-400 transition-colors" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
                 </div>
+                <input type="search" id="search-input" class="w-full bg-stone-950/60 border border-stone-800 text-white text-sm rounded-2xl focus:ring-1 focus:ring-red-800 focus:border-red-800 block pl-10 pr-4 py-3 transition-all outline-none placeholder-stone-600" placeholder="Buscar rótulo, uva...">
             </div>
 
-            <!-- Grade Dinâmica de Vinhos -->
-            <div id="wine-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 content-start flex-grow">
+            <!-- Grade Dinâmica de Vinhos: 2 COLUNAS NO MOBILE -->
+            <div id="wine-list" class="grid grid-cols-2 gap-3 content-start flex-grow pb-10">
                 <!-- Renderizado via JS -->
             </div>
             
             <!-- Estado Vazio -->
-            <div id="empty-message" class="hidden flex-col items-center justify-center flex-grow py-20 text-stone-500 text-center">
-                <div class="w-24 h-24 mb-6 rounded-full bg-stone-900/50 border border-stone-800 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+            <div id="empty-message" class="hidden flex-col items-center justify-center flex-grow py-10 text-stone-500 text-center">
+                <div class="w-16 h-16 mb-4 rounded-full bg-stone-900/50 border border-stone-800 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
                 </div>
-                <h3 class="text-xl font-serif text-stone-300 mb-2">A adega aguarda sua primeira garrafa.</h3>
-                <p class="text-sm">Utilize o botão (+) para escanear um rótulo e iniciar sua coleção.</p>
+                <h3 class="text-base font-serif text-stone-300 mb-1">Sua adega está vazia.</h3>
+                <p class="text-[11px] px-4">Utilize o botão (+) para escanear um rótulo.</p>
             </div>
         </main>
 
-        <!-- Rodapé -->
-        <footer class="text-center mt-auto pb-8 flex-shrink-0">
-            <p class="font-cursive text-4xl text-red-900/60 tracking-widest mb-2 transition-colors hover:text-red-900/80 cursor-default">Thiago Ventura Valencio</p>
-            <p class="text-[10px] text-stone-600 uppercase tracking-[0.3em]">Projeto & Desenvolvimento 10/10</p>
+        <!-- Rodapé Discreto e Elegante -->
+        <footer class="text-center mt-6 flex-shrink-0 opacity-60">
+            <p class="font-serif text-[11px] text-stone-400 tracking-[0.15em] uppercase">Thiago Ventura Valencio</p>
+            <p class="text-[8px] text-stone-600 tracking-[0.2em] mt-1">Projeto & Desenvolvimento</p>
         </footer>
     </div>
 
-    <!-- Interface Fixa: Monitor de API -->
-    <div class="fixed bottom-8 left-8 z-30">
-        <div id="api-monitor" class="monitor-wrapper bg-stone-950/80 backdrop-blur-xl border border-white/10 shadow-[0_10px_30px_rgba(0,0,0,0.8)] rounded-full flex items-center justify-center h-11 cursor-pointer group hover:border-white/20 transition-colors">
+    <!-- Elementos Flutuantes Inferiores (Z-index alto para ficar sobre os modais em background) -->
+    
+    <!-- Monitor de API - Esquerda -->
+    <div class="fixed bottom-6 left-4 z-40">
+        <div id="api-monitor" class="monitor-wrapper bg-stone-950/90 backdrop-blur-xl border border-stone-800 shadow-xl rounded-full flex items-center justify-center h-10 cursor-pointer">
             <div class="minimized-view flex items-center justify-center w-full h-full">
-                <div id="minimized-status-light" class="w-3 h-3 rounded-full bg-green-500 transition-colors duration-500 flex items-center justify-center shadow-[0_0_10px_rgba(34,197,94,0.6)]"></div>
+                <div id="minimized-status-light" class="w-2.5 h-2.5 rounded-full bg-green-500 transition-colors duration-500 flex items-center justify-center shadow-[0_0_10px_rgba(34,197,94,0.6)]"></div>
             </div>
-            <div class="expanded-view opacity-0 p-4 text-xs w-56">
-                <h3 class="font-bold text-stone-400 text-center border-b border-stone-800 pb-2 mb-3 uppercase tracking-widest text-[9px]">Status do Motor IA</h3>
-                <div id="api-key-list" class="space-y-2.5"></div>
+            <div class="expanded-view opacity-0 p-3 text-[10px] w-48">
+                <h3 class="font-bold text-stone-500 text-center border-b border-stone-800 pb-1 mb-2 uppercase tracking-widest text-[8px]">Motor IA</h3>
+                <div id="api-key-list" class="space-y-1.5"></div>
             </div>
         </div>
     </div>
 
-    <!-- Interface Fixa: Botões de Ação Principais -->
-    <div class="fixed bottom-8 right-8 z-40 flex flex-col gap-5 items-center">
-        <!-- Chat flutuante -->
-        <button id="ask-sommelier-btn" title="Falar com Sommelier" class="bg-stone-800 hover:bg-stone-700 border border-stone-600/50 text-stone-300 hover:text-white w-12 h-12 rounded-full flex items-center justify-center shadow-[0_8px_20px_rgba(0,0,0,0.6)] transform hover:scale-110 transition-all duration-300">
+    <!-- Botões de Ação - Direita -->
+    <div class="fixed bottom-6 right-4 z-40 flex flex-col gap-3 items-center">
+        <!-- Chat Sommelier -->
+        <button id="ask-sommelier-btn" title="Falar com Sommelier" class="bg-stone-800 border border-stone-700 text-stone-300 w-11 h-11 rounded-full flex items-center justify-center shadow-lg active:scale-95 transition-transform">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
         </button>
         <!-- Adicionar Vinho (FAB Principal) -->
-        <button id="add-wine-action-btn" title="Adicionar Vinho ao Acervo" class="bg-gradient-to-b from-red-700 to-red-900 hover:from-red-600 hover:to-red-800 border border-red-500/40 text-white w-16 h-16 rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(153,27,27,0.7)] transform hover:scale-110 hover:-translate-y-2 transition-all duration-300 relative group">
-            <div class="absolute inset-0 rounded-full border border-white/20 scale-100 group-hover:scale-110 transition-transform duration-300 opacity-0 group-hover:opacity-100"></div>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 relative z-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+        <button id="add-wine-action-btn" title="Adicionar Vinho" class="bg-gradient-to-b from-red-600 to-red-800 border border-red-500/50 text-white w-14 h-14 rounded-full flex items-center justify-center shadow-[0_4px_15px_rgba(153,27,27,0.6)] active:scale-95 transition-transform">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
         </button>
         
         <!-- Inputs file ocultos -->
@@ -211,20 +188,23 @@
         <input type="file" id="gallery-input" accept="image/*" class="hidden">
     </div>
 
-    <!-- Sistema de Modais Base -->
-    <div id="modal-backdrop" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden modal-scale-enter-from transition-all duration-400"></div>
-    <div id="modal-container" class="fixed inset-0 flex items-center justify-center p-4 sm:p-6 z-50 hidden">
-        <div id="modal-content" class="bg-stone-950 border border-stone-800/80 rounded-[2rem] shadow-[0_30px_60px_rgba(0,0,0,0.9)] w-full max-w-lg max-h-[90vh] overflow-y-auto p-8 relative modal-scale-enter-from custom-scrollbar"></div>
+    <!-- Sistema de Modais Otimizado Mobile -->
+    <div id="modal-backdrop" class="fixed inset-0 bg-black/85 backdrop-blur-md z-[60] hidden modal-scale-enter-from transition-all duration-300"></div>
+    <div id="modal-container" class="fixed inset-0 flex items-end sm:items-center justify-center p-2 sm:p-4 z-[60] hidden">
+        <!-- O modal cola no bottom em telas muito pequenas, ou centraliza em maiores -->
+        <div id="modal-content" class="bg-stone-950 border border-stone-800/80 rounded-t-[2rem] sm:rounded-[2rem] shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto relative modal-scale-enter-from custom-scrollbar flex flex-col">
+            <!-- Conteúdo injetado via JS terá header fixo -->
+        </div>
     </div>
     
-    <!-- Modal de Carregamento Imersivo -->
-    <div id="loading-modal" class="fixed inset-0 bg-stone-950/90 backdrop-blur-xl flex flex-col items-center justify-center z-[100] hidden">
-        <div class="relative w-24 h-24">
+    <!-- Modal de Carregamento Fino -->
+    <div id="loading-modal" class="fixed inset-0 bg-stone-950/95 backdrop-blur-xl flex flex-col items-center justify-center z-[100] hidden">
+        <div class="relative w-20 h-20">
             <div class="absolute inset-0 border-2 border-stone-800 rounded-full"></div>
             <div class="absolute inset-0 border-2 border-t-red-600 rounded-full animate-spin"></div>
-            <div class="absolute inset-0 flex items-center justify-center text-3xl opacity-80">🍷</div>
+            <div class="absolute inset-0 flex items-center justify-center text-2xl opacity-90">🍷</div>
         </div>
-        <p id="loading-text" class="text-stone-300 mt-8 text-lg font-serif italic tracking-widest animate-pulse">A extrair a essência...</p>
+        <p id="loading-text" class="text-stone-400 mt-6 text-sm font-serif tracking-widest animate-pulse">Processando...</p>
     </div>
 
     <!-- LÓGICA CORE, FIREBASE & IA -->
@@ -233,7 +213,7 @@
         import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         // ===================================================================================
-        // 1. CONFIGURAÇÃO FIREBASE (CREDENCIAS EXATAS DA ADEGA ORIGINAL)
+        // 1. CONFIGURAÇÃO FIREBASE
         // ===================================================================================
         const firebaseConfig = {
           apiKey: "AIzaSyCvYgj-gNRFrUpX3chMl8cfTGzYkx0t6eY",
@@ -249,7 +229,7 @@
         const adegaDocRef = doc(db, "adegas", "adega-compartilhada");
 
         // ===================================================================================
-        // 2. MÓDULO GEMINI API (MODELO 2.5 FLASH COM INSTRUÇÃO DE SISTEMA ESTRITA)
+        // 2. MÓDULO GEMINI API (MODELO 2.5 FLASH)
         // ===================================================================================
         class ApiCarousel {
             constructor(keys, monitorElement) {
@@ -266,9 +246,9 @@
                     monitorElement.className = 'flex items-center justify-between';
                     monitorElement.innerHTML = `
                         <span class="font-mono text-stone-500 font-medium">Chave ${index + 1}</span>
-                        <div class="flex items-center gap-2">
-                            <span class="status-text font-bold text-[9px] uppercase tracking-widest"></span>
-                            <div class="status-light w-2 h-2 rounded-full"></div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="status-text font-bold text-[8px] uppercase tracking-widest"></span>
+                            <div class="status-light w-1.5 h-1.5 rounded-full"></div>
                         </div>
                     `;
                     apiKeyList.appendChild(monitorElement);
@@ -282,36 +262,30 @@
                     const text = monitor.querySelector('.status-text');
                     const light = monitor.querySelector('.status-light');
 
-                    light.className = 'status-light w-2 h-2 rounded-full';
+                    light.className = 'status-light w-1.5 h-1.5 rounded-full';
 
                     if (index === this.currentIndex) {
                         if (status === 'processing') {
-                            text.textContent = 'PROCESSANDO';
-                            text.className = 'status-text font-bold text-[9px] uppercase tracking-widest text-amber-400';
-                            light.innerHTML = `<div class="w-2 h-2 border-[1.5px] border-t-transparent border-amber-400 rounded-full animate-spin"></div>`;
+                            text.textContent = 'USANDO';
+                            text.className = 'status-text font-bold text-[8px] uppercase tracking-widest text-amber-400';
+                            light.classList.add('bg-amber-400', 'animate-pulse');
                         } else {
-                            text.textContent = 'CONECTADO';
-                            text.className = 'status-text font-bold text-[9px] uppercase tracking-widest text-green-500';
-                            light.classList.add('bg-green-500', 'shadow-[0_0_8px_rgba(34,197,94,0.8)]');
-                            light.innerHTML = '';
+                            text.textContent = 'PRONTA';
+                            text.className = 'status-text font-bold text-[8px] uppercase tracking-widest text-green-500';
+                            light.classList.add('bg-green-500');
                         }
                     } else {
-                        text.textContent = 'STANDBY';
-                        text.className = 'status-text font-bold text-[9px] uppercase tracking-widest text-stone-600';
+                        text.textContent = 'ESPERA';
+                        text.className = 'status-text font-bold text-[8px] uppercase tracking-widest text-stone-600';
                         light.classList.add('bg-stone-700');
-                        light.innerHTML = '';
                     }
                 });
 
-                this.minimizedLight.innerHTML = '';
-                this.minimizedLight.className = 'w-3 h-3 rounded-full transition-colors duration-500 flex items-center justify-center';
-                this.minimizedLight.classList.remove('light-pulse');
-
+                this.minimizedLight.className = 'w-2 h-2 rounded-full transition-colors duration-300 flex items-center justify-center';
                 if (status === 'processing') {
-                    this.minimizedLight.classList.add('bg-amber-500');
-                    this.minimizedLight.innerHTML = `<div class="w-2 h-2 border-2 border-t-transparent border-white rounded-full animate-spin"></div>`;
+                    this.minimizedLight.classList.add('bg-amber-400', 'animate-pulse');
                 } else {
-                    this.minimizedLight.classList.add('bg-green-500', 'light-pulse');
+                    this.minimizedLight.classList.add('bg-green-500');
                 }
             }
 
@@ -320,7 +294,6 @@
                 for (let attempt = 0; attempt < maxRetries; attempt++) {
                     this.updateMonitorDisplay('processing');
                     const currentKey = this.keys[this.currentIndex];
-                    // Endpoint atualizado definitivo
                     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${currentKey}`;
 
                     try {
@@ -333,21 +306,18 @@
                     }
                 }
                 this.updateMonitorDisplay('idle');
-                throw new Error("Falha na comunicação com a infraestrutura Google Gemini.");
+                throw new Error("Falha de conexão com a IA.");
             }
         }
 
         // ===================================================================================
-        // 3. NOVA CHAVE API FORNECIDA (100% EXATA E DIVIDIDA)
+        // 3. CHAVE API DIVIDIDA E OFUSCADA
         // ===================================================================================
         const parteChave1 = "AIzaSyAl5IjyT2lXyEyUTWyLM";
         const parteChave2 = "7MgF90I_TQVMfM";
         const chaveCompletaObfuscada = parteChave1 + parteChave2;
 
-        const apiKeys = [
-            chaveCompletaObfuscada
-        ];
-        
+        const apiKeys = [ chaveCompletaObfuscada ];
         const apiCarousel = new ApiCarousel(apiKeys, document.getElementById('api-monitor'));
 
         // ===================================================================================
@@ -357,6 +327,7 @@
         const emptyMessage = document.getElementById('empty-message');
         const searchInput = document.getElementById('search-input');
         const totalWineCountDisplay = document.getElementById('total-wine-count');
+        const uniqueLabelsCountDisplay = document.getElementById('unique-labels-count'); // Novo Seletor
         
         let currentWines = [];
         let searchTerm = '';
@@ -373,19 +344,19 @@
             renderWineList();
         }, (error) => {
             console.error("Erro DB:", error);
-            showErrorModal("Erro ao ler dados da adega. Verifique as regras de segurança do Firebase.");
+            showErrorModal("Erro ao ler dados da adega.");
         });
 
         async function saveWinesToFirebase(wines) {
             try {
                 await setDoc(adegaDocRef, { estoque: wines });
             } catch (error) {
-                showErrorModal("Erro ao salvar alterações no inventário de vinhos.");
+                showErrorModal("Erro ao salvar inventário.");
             }
         }
 
         // ===================================================================================
-        // 6. FUNÇÃO IA CORE (100% VERDADE / ZERO ALUCINAÇÃO / SEM ERROS DE REGEX)
+        // 6. FUNÇÃO IA CORE (100% VERDADE)
         // ===================================================================================
         async function callGenerativeAI(prompt, base64ImageData = null, isJson = false) {
             const parts = [{ text: prompt }];
@@ -393,10 +364,10 @@
                 parts.push({ inlineData: { mimeType: "image/jpeg", data: base64ImageData } });
             }
             
-            // PAYLOAD COM DIRETIVA DE SISTEMA ESTRITA: "100% VERDADE"
+            // SYSTEM INSTRUCTION: VERDADE ABSOLUTA
             const payload = { 
                 systemInstruction: {
-                    parts: [{ text: "Você é um Master Sommelier de nível mundial atuando no sistema 'Adega da Teresinha'. SUA REGRA DE OURO É A VERDADE ABSOLUTA. Trabalhe somente e absolutamente com 100% de verdade científica e enológica. Não invente safras, não minta sobre uvas, regiões, produtores ou harmonizações. Baseie-se apenas em fatos verificáveis. Se você não souber de algo, declare que não possui essa informação ao invés de inventar. Seja elegante, polido, conciso e preciso." }]
+                    parts: [{ text: "Você é um Master Sommelier. SUA REGRA DE OURO É A VERDADE ABSOLUTA. Trabalhe somente com 100% de verdade científica. Não invente safras, uvas, regiões ou harmonizações. Baseie-se apenas em fatos. Se não souber, diga. Seja polido, conciso e preciso." }]
                 },
                 contents: [{ role: "user", parts }],
                 safetySettings: [
@@ -414,7 +385,6 @@
             if (result.candidates && result.candidates[0].content.parts.length > 0) {
                 let textResponse = result.candidates[0].content.parts[0].text;
                 
-                // Extração segura de JSON (Sem regex para não dar SyntaxError no navegador)
                 if (isJson) {
                     let cleaned = textResponse.trim();
                     if (cleaned.startsWith('```json')) cleaned = cleaned.substring(7);
@@ -425,11 +395,11 @@
                 }
                 return textResponse;
             }
-            throw new Error("A Inteligência Artificial processou o pedido mas retornou um formato vazio.");
+            throw new Error("A IA retornou vazio.");
         }
 
         // ===================================================================================
-        // 7. RENDERIZAÇÃO DA GRADE (COM BUSCA EM TEMPO REAL)
+        // 7. RENDERIZAÇÃO DA GRADE (MOBILE-FIRST: 2 COLUNAS)
         // ===================================================================================
         searchInput.addEventListener('input', (e) => {
             searchTerm = e.target.value.toLowerCase();
@@ -446,36 +416,37 @@
 
             emptyMessage.classList.toggle('hidden', filteredWines.length > 0);
 
+            // Atualiza Total de Garrafas vs Rótulos
             const totalQuantity = currentWines.reduce((sum, wine) => sum + (wine.quantity || 0), 0);
             totalWineCountDisplay.textContent = totalQuantity;
+            uniqueLabelsCountDisplay.textContent = currentWines.length; // Quantidade de Cards
 
             filteredWines.sort((a, b) => (a.wineName || '').localeCompare(b.wineName || '')).forEach(wine => {
                 const card = document.createElement('div');
-                card.className = 'glass-card p-6 rounded-3xl flex flex-col h-full cursor-pointer relative group overflow-hidden';
+                card.className = 'glass-card p-3.5 rounded-2xl flex flex-col h-full cursor-pointer relative overflow-hidden group';
                 
                 const statusColor = wine.quantity > 2 ? 'bg-green-500' : (wine.quantity === 1 ? 'bg-red-600' : 'bg-amber-500');
                 
                 card.innerHTML = `
-                    <div class="absolute top-0 left-0 w-full h-1.5 ${statusColor} opacity-70 group-hover:opacity-100 transition-opacity"></div>
-                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-white/5 rounded-full blur-xl group-hover:bg-red-900/20 transition-colors"></div>
+                    <div class="absolute top-0 left-0 w-full h-1 ${statusColor} opacity-70"></div>
                     
-                    <div class="flex justify-between items-start mb-4 gap-3 relative z-10">
-                        <h3 class="font-serif font-bold text-2xl text-white leading-tight line-clamp-2">${wine.wineName || 'Rótulo Não Identificado'}</h3>
-                        ${wine.year ? `<span class="bg-stone-900/80 border border-stone-700 text-stone-300 text-xs font-bold px-3 py-1.5 rounded-lg whitespace-nowrap shadow-inner">${wine.year}</span>` : ''}
+                    <div class="flex justify-between items-start mb-2 gap-1 relative z-10">
+                        <h3 class="font-serif font-bold text-sm sm:text-base text-white leading-tight line-clamp-2">${wine.wineName || 'Desconhecido'}</h3>
                     </div>
                     
-                    <div class="mb-5 relative z-10 space-y-1.5">
-                        <p class="text-sm text-stone-300 font-medium flex items-center gap-2"><span class="text-purple-400 text-lg">🍇</span> <span class="truncate">${wine.grape || 'Corte não informado'}</span></p>
-                        <p class="text-xs text-stone-500 flex items-center gap-2 uppercase tracking-widest font-semibold"><span class="text-blue-500/70 text-lg">📍</span> <span class="truncate">${wine.region || 'Origem não informada'}</span></p>
+                    <div class="mb-3 relative z-10 space-y-1">
+                        <p class="text-[10px] sm:text-xs text-stone-300 font-medium flex items-center gap-1.5"><span class="text-purple-400 text-xs">🍇</span> <span class="truncate">${wine.grape || 'Sem uva'}</span></p>
+                        <p class="text-[9px] sm:text-[10px] text-stone-500 flex items-center gap-1.5 uppercase tracking-wider font-semibold"><span class="text-blue-500/70 text-xs">📍</span> <span class="truncate">${wine.region || 'S/ Origem'}</span></p>
+                        ${wine.year ? `<p class="text-[10px] text-red-400 font-bold flex items-center gap-1.5 mt-0.5"><span class="text-stone-500 text-xs">🗓️</span> ${wine.year}</p>` : ''}
                     </div>
                     
-                    <div class="mt-auto pt-5 border-t border-stone-800/50 flex items-center justify-between relative z-10">
-                        <div class="flex items-center gap-2 bg-stone-950/50 px-4 py-2 rounded-xl border border-stone-800">
-                            <span class="text-stone-500">Vol.</span>
-                            <span class="font-bold text-2xl ${wine.quantity === 0 ? 'text-stone-600' : 'text-white'}">${wine.quantity}</span>
+                    <div class="mt-auto pt-2 border-t border-stone-800/50 flex items-center justify-between relative z-10">
+                        <div class="flex items-center gap-1.5 bg-stone-950/60 px-2 py-1 rounded-lg border border-stone-800">
+                            <span class="text-[9px] text-stone-500 uppercase">Qtd</span>
+                            <span class="font-bold text-sm sm:text-base ${wine.quantity === 0 ? 'text-stone-600' : 'text-white'}">${wine.quantity}</span>
                         </div>
-                        <div class="w-10 h-10 rounded-full bg-stone-800 flex items-center justify-center text-stone-400 group-hover:bg-red-900 group-hover:text-white transition-colors border border-stone-700 group-hover:border-red-700 shadow-md">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                        <div class="w-6 h-6 rounded-full bg-stone-800 flex items-center justify-center text-stone-400 border border-stone-700">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                         </div>
                     </div>
                 `;
@@ -485,7 +456,7 @@
         }
 
         // ===================================================================================
-        // 8. CRUD LOGIC (CRIAR, EDITAR, DELETAR)
+        // 8. CRUD LOGIC
         // ===================================================================================
         function createWineFingerprint(wineInfo) {
             return `${(wineInfo.wineName || '').trim().toLowerCase()}-${(wineInfo.grape || '').trim().toLowerCase()}-${wineInfo.year || 0}`;
@@ -515,7 +486,7 @@
         }
 
         function deleteWine(wineId) {
-            if(confirm("Confirma a remoção definitiva deste vinho da sua adega?")) {
+            if(confirm("Remover este vinho da adega?")) {
                 let wines = currentWines.filter(w => w.id !== wineId);
                 saveWinesToFirebase(wines);
                 closeModal();
@@ -561,7 +532,7 @@
                 modalBackdrop.classList.add('hidden');
                 modalContainer.classList.add('hidden');
                 modalContent.innerHTML = '';
-            }, 300); 
+            }, 250); 
         }
 
         function showLoadingModal(text) { loadingText.textContent = text; loadingModal.classList.remove('hidden'); }
@@ -569,13 +540,13 @@
 
         function showErrorModal(message) {
             modalContent.innerHTML = `
-                <div class="text-center">
-                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-900/30 text-red-500 mb-6 border border-red-500/50">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                <div class="p-6 text-center">
+                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-900/30 text-red-500 mb-4 border border-red-500/50">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                     </div>
-                    <h2 class="font-serif text-3xl text-white mb-4">Atenção</h2>
-                    <p class="text-stone-400 leading-relaxed mb-8">${message}</p>
-                    <button class="close-modal-btn w-full bg-stone-800 hover:bg-stone-700 text-white font-bold py-4 rounded-2xl transition-colors tracking-widest uppercase text-sm">Fechar</button>
+                    <h2 class="font-serif text-2xl text-white mb-3">Aviso</h2>
+                    <p class="text-stone-400 text-sm leading-relaxed mb-6">${message}</p>
+                    <button class="close-modal-btn w-full bg-stone-800 hover:bg-stone-700 text-white font-bold py-3 rounded-xl transition-colors text-sm">OK</button>
                 </div>
             `;
             openModal();
@@ -583,22 +554,35 @@
         }
 
         // ===================================================================================
-        // 10. TELAS DO MODAL (SCANNER, DETALHES, EDIÇÃO)
+        // 10. TELAS DO MODAL COM HEADER FIXO (MOBILE FIRST)
         // ===================================================================================
+        
+        const getModalHeader = (title, icon = '', showBackBtn = false) => `
+            <div class="sticky top-0 bg-stone-950/95 backdrop-blur-md z-20 pb-3 mb-4 border-b border-stone-800 flex justify-between items-center px-6 pt-5 -mx-6 -mt-6 rounded-t-[2rem]">
+                <h2 class="font-serif text-xl sm:text-2xl text-white flex items-center gap-2">${icon} ${title}</h2>
+                <button class="${showBackBtn ? 'back-modal-btn' : 'close-modal-btn'} text-stone-400 hover:text-white bg-stone-900 border border-stone-700 w-8 h-8 rounded-full flex items-center justify-center transition-colors">
+                    ${showBackBtn 
+                        ? '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>' 
+                        : '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>'}
+                </button>
+            </div>
+        `;
+
         function showImageSourceModal() {
             modalContent.innerHTML = `
-                <button class="close-modal-btn absolute top-6 right-6 text-stone-500 hover:text-white transition-colors bg-stone-800/50 rounded-full p-2">&times;</button>
-                <h2 class="font-serif text-3xl text-white mb-2 text-center">Registrar Vinho</h2>
-                <p class="text-stone-400 text-sm text-center mb-8">O Sommelier IA fará a leitura do rótulo.</p>
-                <div class="grid grid-cols-2 gap-5">
-                    <button id="open-camera-btn" class="bg-gradient-to-br from-red-900 to-red-800 hover:from-red-800 hover:to-red-700 border border-red-500/30 text-white font-bold py-8 px-4 rounded-[2rem] flex flex-col items-center justify-center gap-4 transition-transform transform hover:-translate-y-1 shadow-[0_10px_20px_rgba(153,27,27,0.4)]">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-red-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                        <span class="text-sm tracking-wide">Câmera</span>
-                    </button>
-                    <button id="open-gallery-btn" class="bg-gradient-to-br from-stone-800 to-stone-900 hover:from-stone-700 hover:to-stone-800 border border-stone-600/50 text-white font-bold py-8 px-4 rounded-[2rem] flex flex-col items-center justify-center gap-4 transition-transform transform hover:-translate-y-1 shadow-[0_10px_20px_rgba(0,0,0,0.6)]">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-stone-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                        <span class="text-sm tracking-wide">Galeria</span>
-                    </button>
+                ${getModalHeader('Adicionar Vinho', '📸')}
+                <div class="p-2">
+                    <p class="text-stone-400 text-xs text-center mb-6">Fotografe o rótulo frontal para leitura da IA.</p>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button id="open-camera-btn" class="bg-gradient-to-br from-red-900 to-red-800 border border-red-500/30 text-white font-bold py-6 px-2 rounded-2xl flex flex-col items-center justify-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-red-200" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                            <span class="text-[11px] tracking-wide uppercase">Câmera</span>
+                        </button>
+                        <button id="open-gallery-btn" class="bg-stone-800 border border-stone-600/50 text-white font-bold py-6 px-2 rounded-2xl flex flex-col items-center justify-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-stone-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                            <span class="text-[11px] tracking-wide uppercase">Galeria</span>
+                        </button>
+                    </div>
                 </div>
             `;
             openModal();
@@ -610,18 +594,17 @@
         async function handleImageUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
-            showLoadingModal('Analisando o rótulo da garrafa...');
+            showLoadingModal('Analisando rótulo com IA...');
             try {
                 const base64Image = await toBase64(file);
-                // Instrução estrita para extração pura
-                const prompt = `Analise APENAS os dados visíveis na imagem do rótulo de vinho. Extraia a verdade exata impressa. Retorne ESTRITAMENTE JSON com as chaves: "wineName" (string), "grape" (string principal visível ou suposta pelo corte padrão da região, sem invenções), "region" (string), "year" (ano em numero ou null), "description" (breve resumo técnico verdadeiro sobre o tipo do vinho, max 200 carac), "foodPairings" (array de 5 strings reais e classicas). Se não ver, use null.`;
+                const prompt = `Extraia dados visíveis no rótulo. Retorne JSON: "wineName", "grape" (só verdade), "region", "year" (numero ou null), "description" (max 150 carac, factual), "foodPairings" (array de 3 strings, clássicas). Null se invisível.`;
                 const jsonResponse = await callGenerativeAI(prompt, base64Image, true);
                 const wineInfo = JSON.parse(jsonResponse);
                 
                 if (wineInfo && wineInfo.wineName) showScannedWineModal(wineInfo);
-                else showErrorModal('A IA não conseguiu identificar os dados técnicos deste rótulo. Tente uma foto mais nítida.');
+                else showErrorModal('Não foi possível ler os dados técnicos deste rótulo.');
             } catch (error) {
-                showErrorModal(`A análise falhou.\nDetalhes: ${error.message}`);
+                showErrorModal(`Análise falhou. Detalhes: ${error.message}`);
             } finally {
                 hideLoadingModal();
                 event.target.value = ''; 
@@ -630,37 +613,27 @@
 
         function showScannedWineModal(wineInfo) {
             const fingerprint = createWineFingerprint(wineInfo);
-            const existingWine = currentWines.find(w => createWineFingerprint(w) === fingerprint);
-            const isInStock = !!existingWine;
-            const btnClass = "font-bold py-4 px-4 rounded-2xl w-full transition-all flex items-center justify-center gap-3 text-sm uppercase tracking-widest";
+            const isInStock = !!currentWines.find(w => createWineFingerprint(w) === fingerprint);
 
             modalContent.innerHTML = `
-                <div class="mb-8 pr-10 border-b border-stone-800 pb-6">
-                    <h2 class="font-serif text-4xl text-white mb-3 leading-tight">${wineInfo.wineName || 'Nome Desconhecido'} ${wineInfo.year ? `<span class="text-2xl text-stone-500 font-sans tracking-normal ml-2">(${wineInfo.year})</span>` : ''}</h2>
-                    <p class="text-stone-400 text-sm font-semibold tracking-[0.2em] uppercase flex flex-col gap-1">
-                        <span class="text-purple-400">${wineInfo.grape || 'Uva não detectada'}</span>
-                        <span class="text-blue-500">${wineInfo.region || 'Região não detectada'}</span>
-                    </p>
-                </div>
-                
-                <div class="space-y-4 mb-10 max-h-[35vh] overflow-y-auto custom-scrollbar pr-4">
-                    <div class="bg-stone-900/50 border border-stone-800 p-5 rounded-2xl">
-                        <h3 class="font-bold text-xs text-stone-500 uppercase tracking-widest mb-3 flex items-center gap-2"><span class="text-lg">📋</span> Análise Técnica</h3>
-                        <p class="text-stone-300 text-sm leading-relaxed">${wineInfo.description || 'Nenhum dado adicional identificado.'}</p>
+                ${getModalHeader('Confirmação', '✔️')}
+                <div class="px-2">
+                    <div class="mb-5 pb-4 border-b border-stone-800">
+                        <h2 class="font-serif text-2xl text-white mb-2">${wineInfo.wineName || 'Sem Nome'} ${wineInfo.year ? `<span class="text-base text-stone-500">(${wineInfo.year})</span>` : ''}</h2>
+                        <p class="text-stone-400 text-xs font-semibold tracking-widest uppercase">${wineInfo.grape || 'S/ Uva'} &bull; ${wineInfo.region || 'S/ Região'}</p>
                     </div>
-                    <div class="bg-stone-900/50 border border-stone-800 p-5 rounded-2xl">
-                        <h3 class="font-bold text-xs text-stone-500 uppercase tracking-widest mb-3 flex items-center gap-2"><span class="text-lg">🍽️</span> Harmonização Clássica</h3>
-                        <ul class="text-stone-300 text-sm space-y-2 ml-1">
-                            ${(wineInfo.foodPairings || []).map(p => `<li class="flex items-center gap-2"><span class="w-1 h-1 bg-red-800 rounded-full"></span> ${p}</li>`).join('')}
-                        </ul>
+                    <div class="space-y-3 mb-6 max-h-[35vh] overflow-y-auto custom-scrollbar pr-2">
+                        <div class="bg-stone-900/50 p-3 rounded-xl border border-stone-800">
+                            <h3 class="text-[10px] text-stone-500 uppercase tracking-widest mb-1">Análise Técnica</h3>
+                            <p class="text-stone-300 text-xs leading-relaxed">${wineInfo.description || 'Não identificada.'}</p>
+                        </div>
                     </div>
-                </div>
-
-                <div class="flex flex-col gap-4">
-                    <button class="add-wine-btn bg-red-800 hover:bg-red-700 text-white shadow-[0_5px_20px_rgba(153,27,27,0.5)] ${btnClass}">
-                        ${isInStock ? '➕ Atualizar Estoque (+1)' : '💾 Registrar na Coleção'}
-                    </button>
-                    <button class="close-modal-btn bg-transparent border border-stone-700 hover:bg-stone-800 text-stone-300 ${btnClass}">Descartar</button>
+                    <div class="flex flex-col gap-2">
+                        <button class="add-wine-btn bg-red-800 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl text-sm uppercase tracking-wide">
+                            ${isInStock ? '+1 Adicionar ao Estoque Existente' : '💾 Salvar na Adega'}
+                        </button>
+                        <button class="close-modal-btn bg-transparent border border-stone-700 text-stone-400 py-3.5 rounded-xl text-sm uppercase font-bold">Descartar</button>
+                    </div>
                 </div>
             `;
             openModal();
@@ -669,142 +642,112 @@
         }
 
         function showStockWineDetails(wine) {
-            const btnClass = "font-bold py-4 rounded-2xl flex-1 flex items-center justify-center gap-2 text-xs uppercase tracking-widest transition-all shadow-lg";
-            
             modalContent.innerHTML = `
-                <div class="absolute top-6 right-6 flex gap-3">
-                    <button class="edit-wine-btn text-stone-500 hover:text-blue-400 transition-colors bg-stone-900 rounded-full p-2 border border-stone-800" title="Corrigir Dados">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-                    </button>
-                    <button class="delete-wine-btn text-stone-500 hover:text-red-500 transition-colors bg-stone-900 rounded-full p-2 border border-stone-800" title="Apagar Vinho">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                    </button>
-                    <button class="close-modal-btn text-stone-500 hover:text-white transition-colors bg-stone-900 rounded-full p-2 border border-stone-800">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                    </button>
-                </div>
-                
-                <div class="mt-4 mb-10 pr-24">
-                    <h2 class="font-serif text-4xl sm:text-5xl text-white mb-4 leading-tight">${wine.wineName}</h2>
-                    <div class="flex flex-wrap items-center gap-3 text-sm">
-                        <span class="bg-red-900/30 text-red-400 px-3 py-1 rounded-lg font-bold border border-red-900/50">${wine.year || 'S.A.'}</span>
-                        <span class="text-stone-400 font-semibold tracking-widest uppercase">${wine.grape}</span>
+                ${getModalHeader('Detalhes', '🍷')}
+                <div class="px-2 pb-4">
+                    <div class="mb-6 border-b border-stone-800 pb-5">
+                        <h2 class="font-serif text-3xl text-white mb-2 leading-tight">${wine.wineName}</h2>
+                        <div class="flex flex-wrap items-center gap-2 mb-2">
+                            <span class="bg-red-900/30 text-red-400 text-xs px-2.5 py-0.5 rounded font-bold">${wine.year || 'S.A.'}</span>
+                            <span class="text-stone-400 text-[10px] uppercase tracking-widest">${wine.grape}</span>
+                        </div>
+                        <p class="text-stone-500 text-xs">📍 ${wine.region}</p>
                     </div>
-                    <p class="text-stone-500 mt-3 flex items-center gap-2 text-sm"><span class="text-xl">📍</span> ${wine.region}</p>
-                </div>
 
-                <div class="bg-stone-900/50 border border-stone-800/80 rounded-[2rem] p-6 flex items-center justify-between mb-10">
-                    <span class="text-stone-400 font-medium uppercase tracking-widest text-xs">Inventário de Garrafas</span>
-                    <div class="flex items-center gap-5">
-                        <button class="btn-minus w-12 h-12 rounded-full bg-stone-950 text-stone-300 hover:text-white hover:bg-stone-800 border border-stone-800 transition-all text-2xl font-light flex items-center justify-center">-</button>
-                        <span class="text-5xl font-serif text-white w-14 text-center font-bold">${wine.quantity}</span>
-                        <button class="btn-plus w-12 h-12 rounded-full bg-stone-950 text-stone-300 hover:text-white hover:bg-stone-800 border border-stone-800 transition-all text-2xl font-light flex items-center justify-center">+</button>
+                    <div class="bg-stone-900 border border-stone-800 rounded-2xl p-4 flex items-center justify-between mb-6">
+                        <span class="text-stone-400 text-xs uppercase tracking-widest font-medium">Garrafas</span>
+                        <div class="flex items-center gap-4">
+                            <button class="btn-minus w-10 h-10 rounded-full bg-stone-950 text-stone-400 border border-stone-700 text-xl flex items-center justify-center">-</button>
+                            <span class="text-3xl font-serif text-white font-bold w-8 text-center">${wine.quantity}</span>
+                            <button class="btn-plus w-10 h-10 rounded-full bg-stone-950 text-stone-400 border border-stone-700 text-xl flex items-center justify-center">+</button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 mb-2">
+                        <button class="tech-sheet-btn bg-stone-800 border border-stone-700 text-stone-200 py-3 rounded-xl text-[10px] uppercase tracking-widest font-bold flex items-center justify-center gap-1.5">
+                            📜 Ficha Técnica
+                        </button>
+                        <button class="edit-wine-btn bg-stone-800 border border-stone-700 text-stone-200 py-3 rounded-xl text-[10px] uppercase tracking-widest font-bold flex items-center justify-center gap-1.5">
+                            ✏️ Editar Info
+                        </button>
+                        <button class="delete-wine-btn col-span-2 mt-2 bg-transparent border border-red-900/50 text-red-500 py-3 rounded-xl text-[10px] uppercase tracking-widest font-bold">
+                            🗑️ Remover da Adega
+                        </button>
                     </div>
                 </div>
-
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <button class="tech-sheet-btn bg-stone-800 hover:bg-stone-700 border border-stone-700 text-stone-200 hover:text-white ${btnClass}">
-                        <span class="text-xl">📜</span> Ficha IA (Verdade)
-                    </button>
-                    <button class="drink-wine-btn bg-red-800 hover:bg-red-700 text-white shadow-[0_10px_20px_rgba(153,27,27,0.4)] ${btnClass}">
-                        <span class="text-xl">🍷</span> Consumir (-1)
-                    </button>
-                </div>`;
+            `;
 
             openModal();
-
             modalContent.querySelector('.close-modal-btn').onclick = closeModal;
             modalContent.querySelector('.delete-wine-btn').onclick = () => deleteWine(wine.id);
             modalContent.querySelector('.edit-wine-btn').onclick = () => showEditWineModal(wine);
             modalContent.querySelector('.btn-minus').onclick = () => updateWineQuantity(wine.id, -1);
             modalContent.querySelector('.btn-plus').onclick = () => updateWineQuantity(wine.id, 1);
-            
             modalContent.querySelector('.tech-sheet-btn').onclick = () => generateTechSheet(wine);
-            modalContent.querySelector('.drink-wine-btn').onclick = () => updateWineQuantity(wine.id, -1);
         }
 
         function showEditWineModal(wine) {
             modalContent.innerHTML = `
-                <div class="flex justify-between items-center mb-8 border-b border-stone-800 pb-5">
-                    <h2 class="font-serif text-3xl text-white">Correção Manual</h2>
-                    <button class="close-modal-btn text-stone-500 hover:text-white p-2 bg-stone-900 rounded-full transition-colors border border-stone-800">&times;</button>
-                </div>
-                <div class="space-y-5">
+                ${getModalHeader('Editar', '✏️', true)}
+                <div class="px-2 pb-4 space-y-4">
                     <div>
-                        <label class="block text-[10px] font-bold text-stone-500 uppercase tracking-[0.2em] mb-2 pl-1">Rótulo / Nome Principal</label>
-                        <input type="text" id="edit-name" value="${wine.wineName || ''}" class="w-full bg-stone-900/50 border border-stone-700 rounded-xl p-4 text-white focus:border-red-600 focus:ring-1 focus:ring-red-600 outline-none transition-colors font-serif text-xl">
+                        <label class="block text-[9px] font-bold text-stone-500 uppercase tracking-widest mb-1 pl-1">Rótulo</label>
+                        <input type="text" id="edit-name" value="${wine.wineName || ''}" class="w-full bg-stone-900 border border-stone-700 rounded-xl p-3 text-white text-sm focus:border-red-600 outline-none">
                     </div>
                     <div>
-                        <label class="block text-[10px] font-bold text-stone-500 uppercase tracking-[0.2em] mb-2 pl-1">Composição / Uvas</label>
-                        <input type="text" id="edit-grape" value="${wine.grape || ''}" class="w-full bg-stone-900/50 border border-stone-700 rounded-xl p-4 text-white focus:border-red-600 focus:ring-1 focus:ring-red-600 outline-none transition-colors">
+                        <label class="block text-[9px] font-bold text-stone-500 uppercase tracking-widest mb-1 pl-1">Uvas</label>
+                        <input type="text" id="edit-grape" value="${wine.grape || ''}" class="w-full bg-stone-900 border border-stone-700 rounded-xl p-3 text-white text-sm focus:border-red-600 outline-none">
                     </div>
-                    <div class="grid grid-cols-2 gap-5">
+                    <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-[10px] font-bold text-stone-500 uppercase tracking-[0.2em] mb-2 pl-1">Região de Origem</label>
-                            <input type="text" id="edit-region" value="${wine.region || ''}" class="w-full bg-stone-900/50 border border-stone-700 rounded-xl p-4 text-white focus:border-red-600 outline-none transition-colors">
+                            <label class="block text-[9px] font-bold text-stone-500 uppercase tracking-widest mb-1 pl-1">Região</label>
+                            <input type="text" id="edit-region" value="${wine.region || ''}" class="w-full bg-stone-900 border border-stone-700 rounded-xl p-3 text-white text-sm focus:border-red-600 outline-none">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-bold text-stone-500 uppercase tracking-[0.2em] mb-2 pl-1">Safra (Ano)</label>
-                            <input type="number" id="edit-year" value="${wine.year || ''}" class="w-full bg-stone-900/50 border border-stone-700 rounded-xl p-4 text-white focus:border-red-600 outline-none transition-colors font-bold text-red-400">
+                            <label class="block text-[9px] font-bold text-stone-500 uppercase tracking-widest mb-1 pl-1">Ano</label>
+                            <input type="number" id="edit-year" value="${wine.year || ''}" class="w-full bg-stone-900 border border-stone-700 rounded-xl p-3 text-white text-sm focus:border-red-600 outline-none">
                         </div>
                     </div>
-                </div>
-                <div class="mt-10 flex gap-4">
-                    <button class="save-edit-btn flex-1 bg-green-700 hover:bg-green-600 text-white font-bold py-4 rounded-2xl transition-colors tracking-widest uppercase text-sm shadow-[0_5px_15px_rgba(21,128,61,0.4)]">Gravar Mudanças</button>
-                    <button class="cancel-edit-btn flex-1 bg-stone-800 hover:bg-stone-700 border border-stone-700 text-stone-300 hover:text-white font-bold py-4 rounded-2xl transition-colors tracking-widest uppercase text-sm">Descartar</button>
+                    <button class="save-edit-btn w-full mt-4 bg-green-700 text-white font-bold py-3.5 rounded-xl text-xs uppercase tracking-widest">Salvar Alterações</button>
                 </div>
             `;
-            
-            modalContent.querySelector('.close-modal-btn').onclick = () => showStockWineDetails(wine);
-            modalContent.querySelector('.cancel-edit-btn').onclick = () => showStockWineDetails(wine);
+            modalContent.querySelector('.back-modal-btn').onclick = () => showStockWineDetails(wine);
             modalContent.querySelector('.save-edit-btn').onclick = () => saveEditedWine(wine.id);
         }
 
-        // ===================================================================================
-        // 11. FUNÇÕES INTELIGENTES DE IA (100% VERDADE / FACTUAL)
-        // ===================================================================================
-        
         async function generateTechSheet(wine) {
-            showLoadingModal('Acessando os dados oficiais do Sommelier...');
+            showLoadingModal('Analisando ficha...');
             try {
-                // Comando estrito exigindo verdade factual
-                const prompt = `Gere uma Ficha Técnica ESTRITAMENTE VERDADEIRA e científica para: Vinho: ${wine.wineName}, Ano: ${wine.year}, Região: ${wine.region}, Uva: ${wine.grape}. \nRegra absoluta: NÃO INVENTE NENHUM DADO. Se a safra específica ou o vinho não tiver informações conhecidas globalmente, traga informações genéricas e precisas da uva e região. \nFormate em HTML (use <h3>, <p>, <ul>). \nSeções exigidas: Serviço (Temperatura ideal real), Guarda (estimativa científica real), Perfil Sensorial Típico (verdadeiro para a casta/região), e Fatos sobre a Região.`;
+                const prompt = `Ficha Técnica 100% VERDADEIRA para: ${wine.wineName}, Ano: ${wine.year}, Região: ${wine.region}, Uva: ${wine.grape}. Se não houver info oficial do rótulo, dê infos da uva/região genérica verídica. HTML: <h3>, <p>, <ul>. Sem invenções.`;
                 const htmlText = await callGenerativeAI(prompt);
                 
                 modalContent.innerHTML = `
-                    <button class="close-modal-btn absolute top-6 right-6 text-stone-500 hover:text-white transition-colors bg-stone-900 border border-stone-800 rounded-full p-2">&times;</button>
-                    <h2 class="font-serif text-4xl text-red-500 mb-8 border-b border-stone-800 pb-4">Análise Master</h2>
-                    <div class="text-stone-300 space-y-5 max-h-[60vh] overflow-y-auto custom-scrollbar pr-4 [&>h3]:text-white [&>h3]:font-serif [&>h3]:text-2xl [&>h3]:mt-6 [&>h3]:mb-2 [&>ul]:list-disc [&>ul]:pl-5 [&>p]:leading-relaxed [&>p]:text-sm">
+                    ${getModalHeader('Ficha Técnica', '📜', true)}
+                    <div class="px-3 pb-6 text-stone-300 space-y-4 max-h-[65vh] overflow-y-auto custom-scrollbar [&>h3]:text-white [&>h3]:font-serif [&>h3]:text-lg [&>h3]:mt-4 [&>h3]:border-b [&>h3]:border-stone-800 [&>h3]:pb-1 [&>ul]:list-disc [&>ul]:pl-4 [&>p]:text-xs [&>p]:leading-relaxed [&>li]:text-xs">
                         ${htmlText}
                     </div>`;
-                modalContent.querySelector('.close-modal-btn').onclick = () => showStockWineDetails(wine); 
+                modalContent.querySelector('.back-modal-btn').onclick = () => showStockWineDetails(wine);
             } catch (error) {
-                showErrorModal(`Erro na base de dados da IA: ${error.message}`);
+                showErrorModal(`Erro: ${error.message}`);
             } finally { hideLoadingModal(); }
         }
 
         function openChatModal() {
-            const chatHistory = [{ role: 'ai', text: 'Saudações. Sou o Master Sommelier da sua adega. Meu compromisso é com a verdade técnica e a precisão absoluta. Diga-me, o que vamos harmonizar ou degustar hoje?' }];
+            const chatHistory = [{ role: 'ai', text: 'Sommelier online. Fatos e verdades enológicas. Como harmonizamos hoje?' }];
             modalContent.innerHTML = `
-                <div class="flex justify-between items-center pb-5 border-b border-stone-800 mb-6">
-                    <h2 class="font-serif text-3xl text-white flex items-center gap-3">
-                        <span class="w-10 h-10 rounded-full bg-stone-800 flex items-center justify-center text-lg border border-stone-700">🤵</span> 
-                        Consulta Sommelier
-                    </h2>
-                    <button class="close-modal-btn text-stone-500 hover:text-white p-2 bg-stone-900 border border-stone-800 rounded-full transition-colors">&times;</button>
-                </div>
-                <div id="chat-messages" class="flex-1 space-y-5 overflow-y-auto flex flex-col h-[55vh] pr-4 custom-scrollbar">
-                    ${chatHistory.map(msg => `
-                        <div class="max-w-[85%] p-4 rounded-3xl text-sm leading-relaxed ${msg.role === 'user' ? 'bg-red-900/50 text-white rounded-br-sm self-end border border-red-800/50' : 'bg-stone-900 text-stone-300 border border-stone-800 rounded-bl-sm self-start'} shadow-lg font-medium">
-                            ${msg.text}
-                        </div>
-                    `).join('')}
-                </div>
-                <div class="pt-5 mt-2">
-                    <form id="chat-form" class="relative flex items-center group">
-                        <input type="text" id="chat-input" class="w-full bg-stone-900 border border-stone-700 rounded-full pl-6 pr-14 py-4 text-white focus:outline-none focus:border-red-700 focus:ring-1 focus:ring-red-700 transition-all font-medium" placeholder="Ex: Que vinho da adega combina com risoto?" autocomplete="off">
-                        <button type="submit" class="absolute right-2 w-12 h-12 bg-red-800 hover:bg-red-700 text-white rounded-full flex items-center justify-center transition-colors shadow-md">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg>
+                ${getModalHeader('Sommelier', '🤵')}
+                <div class="px-2 pb-2 flex flex-col h-[65vh]">
+                    <div id="chat-messages" class="flex-1 space-y-4 overflow-y-auto pr-2 custom-scrollbar pb-4">
+                        ${chatHistory.map(msg => `
+                            <div class="max-w-[90%] p-3 rounded-2xl text-xs leading-relaxed ${msg.role === 'user' ? 'bg-red-900/60 text-white rounded-br-sm self-end' : 'bg-stone-900 text-stone-300 border border-stone-800 rounded-bl-sm self-start'}">
+                                ${msg.text}
+                            </div>
+                        `).join('')}
+                    </div>
+                    <form id="chat-form" class="relative flex items-center mt-2 border-t border-stone-800 pt-3">
+                        <input type="text" id="chat-input" class="w-full bg-stone-900 border border-stone-700 rounded-xl pl-4 pr-12 py-3 text-white text-sm focus:outline-none focus:border-red-700" placeholder="Pergunte..." autocomplete="off">
+                        <button type="submit" class="absolute right-2 w-9 h-9 bg-red-800 text-white rounded-lg flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg>
                         </button>
                     </form>
                 </div>`;
@@ -820,16 +763,15 @@
                 
                 addChatBubble(userMsg, 'user');
                 chatInput.value = '';
-                
-                const loaderId = addChatBubble('<div class="flex gap-1.5 items-center h-5"><div class="w-2 h-2 bg-stone-500 rounded-full animate-bounce"></div><div class="w-2 h-2 bg-stone-500 rounded-full animate-bounce" style="animation-delay: 0.15s"></div><div class="w-2 h-2 bg-stone-500 rounded-full animate-bounce" style="animation-delay: 0.3s"></div></div>', 'ai', true);
+                const loaderId = addChatBubble('<div class="flex gap-1 items-center h-4"><div class="w-1.5 h-1.5 bg-stone-500 rounded-full animate-bounce"></div><div class="w-1.5 h-1.5 bg-stone-500 rounded-full animate-bounce" style="animation-delay: 0.15s"></div></div>', 'ai', true);
 
                 try {
-                    const stock = currentWines.filter(w=>w.quantity>0).map(w => `- ${w.wineName} (Uva: ${w.grape} | Safra: ${w.year})`).join('\n');
-                    const prompt = `O usuário perguntou: "${userMsg}". \nA adega atual possui:\n${stock || 'Nenhum vinho no momento'}\nREGRA: Responda apenas com a VERDADE TÉCNICA ENOLÓGICA. Harmonize com exatidão usando princípios clássicos da gastronomia. Se não houver nada perfeito no estoque, seja honesto e diga qual seria o estilo correto a comprar, mas cite o vinho mais próximo do estoque como plano B. Formate o texto de forma limpa, sem usar blocos markdown.`;
+                    const stock = currentWines.filter(w=>w.quantity>0).map(w => `- ${w.wineName} (${w.grape})`).join('\n');
+                    const prompt = `Usuário: "${userMsg}". Adega:\n${stock || 'Vazia'}\n100% VERDADE TÉCNICA ENOLÓGICA. Harmonize com exatidão clássica priorizando o estoque. Seja direto. Sem markdown.`;
                     const aiResponse = await callGenerativeAI(prompt);
                     document.getElementById(loaderId).innerHTML = aiResponse.replace(/\n/g, '<br>');
                 } catch (error) {
-                    document.getElementById(loaderId).innerHTML = `Sistema indisponível. Erro: ${error.message}`;
+                    document.getElementById(loaderId).innerHTML = `Erro: ${error.message}`;
                 }
             };
         }
@@ -839,7 +781,7 @@
             const el = document.createElement('div');
             const id = 'msg-' + Date.now();
             el.id = id;
-            el.className = `max-w-[85%] p-4 rounded-3xl text-sm leading-relaxed shadow-lg font-medium ${role === 'user' ? 'bg-red-900/50 text-white rounded-br-sm self-end border border-red-800/50' : 'bg-stone-900 text-stone-300 border border-stone-800 rounded-bl-sm self-start'}`;
+            el.className = `max-w-[90%] p-3 rounded-2xl text-xs leading-relaxed mt-4 ${role === 'user' ? 'bg-red-900/60 text-white rounded-br-sm self-end' : 'bg-stone-900 text-stone-300 border border-stone-800 rounded-bl-sm self-start'}`;
             if(isHtml) el.innerHTML = text; else el.textContent = text;
             chatMessages.appendChild(el);
             chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -847,48 +789,52 @@
         }
 
         async function suggestWineForTonight() {
-            if (currentWines.length === 0) return showErrorModal("A coleção está vazia. Adicione vinhos para receber recomendações.");
-            showLoadingModal('Realizando seleção científica da adega...');
+            if (currentWines.length === 0) return showErrorModal("Cadastre vinhos primeiro.");
+            showLoadingModal('Buscando a verdade na adega...');
             try {
-                const stock = currentWines.filter(w=>w.quantity>0).map(w => `- ${w.wineName} (${w.grape}, ${w.year})`).join('\n');
-                const prompt = `Você é um Sommelier 100% verdadeiro. Analise esta adega:\n${stock}\nEscolha 1 único vinho para ser aberto hoje. Justifique tecnicamente e cientificamente o momento de maturidade do vinho e sugira o acompanhamento clássico correto. \nResponda em HTML limpo (use <h3>, <p>, <strong>). Não gere fatos que não sejam comprováveis sobre a casta/região.`;
+                const stock = currentWines.filter(w=>w.quantity>0).map(w => `- ${w.wineName}`).join('\n');
+                const prompt = `Sommelier Factual. Adega:\n${stock}\nEscolha 1 vinho para hoje com base técnica verdadeira. HTML limpo (<h3>, <p>).`;
                 const resp = await callGenerativeAI(prompt);
                 
                 modalContent.innerHTML = `
-                    <button class="close-modal-btn absolute top-6 right-6 text-stone-500 hover:text-white transition-colors bg-stone-900 border border-stone-800 rounded-full p-2">&times;</button>
-                    <h2 class="font-serif text-4xl text-purple-400 mb-8 border-b border-stone-800 pb-4">Sugestão do Master</h2>
-                    <div class="text-stone-300 space-y-4 max-h-[60vh] overflow-y-auto custom-scrollbar pr-4 [&>h3]:text-white [&>h3]:font-serif [&>h3]:text-2xl [&>h3]:mt-6 [&>h3]:mb-2 [&>p]:leading-relaxed">${resp}</div>`;
+                    ${getModalHeader('Sugestão Factual', '✨')}
+                    <div class="px-4 pb-6 text-stone-300 space-y-3 max-h-[60vh] overflow-y-auto custom-scrollbar [&>h3]:text-white [&>h3]:font-serif [&>h3]:text-lg [&>p]:text-sm">
+                        ${resp}
+                    </div>`;
                 openModal();
                 modalContent.querySelector('.close-modal-btn').onclick = closeModal;
             } catch (error) { showErrorModal(error.message); } finally { hideLoadingModal(); }
         }
 
         function openDinnerPlannerModal() {
-            if (currentWines.length === 0) return showErrorModal("É necessário ter vinhos em estoque para realizar um planejamento de harmonização real.");
+            if (currentWines.length === 0) return showErrorModal("Sem vinhos para harmonizar.");
             modalContent.innerHTML = `
-                <button class="close-modal-btn absolute top-6 right-6 text-stone-500 hover:text-white transition-colors bg-stone-900 border border-stone-800 rounded-full p-2">&times;</button>
-                <h2 class="font-serif text-4xl text-blue-400 mb-4">Planejar Jantar</h2>
-                <p class="text-stone-400 text-sm mb-8 font-medium">Informe a temática gastronômica exata do evento para elaborarmos um cardápio real e compatível.</p>
-                <form id="dinner-form" class="flex flex-col gap-6">
-                    <input type="text" id="dinner-theme" class="bg-stone-900 border border-stone-700 rounded-2xl p-5 text-white outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 font-medium text-lg placeholder-stone-600" placeholder="Ex: Frutos do Mar e Cítricos..." required>
-                    <button type="submit" class="bg-blue-800 hover:bg-blue-700 text-white font-bold py-5 rounded-2xl shadow-[0_10px_20px_rgba(30,64,175,0.4)] transition-all uppercase tracking-widest text-sm">Elaborar Harmonização</button>
-                </form>`;
+                ${getModalHeader('Harmonizar Jantar', '🍽️')}
+                <div class="px-4 pb-6">
+                    <p class="text-stone-400 text-xs mb-6">Informe a temática do prato para uma harmonização verdadeira.</p>
+                    <form id="dinner-form" class="flex flex-col gap-4">
+                        <input type="text" id="dinner-theme" class="bg-stone-900 border border-stone-700 rounded-xl p-4 text-white text-sm outline-none focus:border-blue-500" placeholder="Ex: Frutos do Mar..." required>
+                        <button type="submit" class="bg-blue-800 text-white font-bold py-4 rounded-xl shadow-lg uppercase tracking-widest text-xs">Elaborar Menu</button>
+                    </form>
+                </div>`;
             openModal();
             modalContent.querySelector('.close-modal-btn').onclick = closeModal;
             document.getElementById('dinner-form').onsubmit = (e) => { e.preventDefault(); generateDinnerMenu(document.getElementById('dinner-theme').value); };
         }
 
         async function generateDinnerMenu(theme) {
-            showLoadingModal('Consultando as regras absolutas de harmonização...');
+            showLoadingModal('Aplicando regras da enologia...');
             try {
-                const stock = currentWines.filter(w=>w.quantity>0).map(w => `- ${w.wineName} (Uva: ${w.grape}, Região: ${w.region})`).join('\n');
-                const prompt = `Você é a maior autoridade do mundo em harmonização molecular e tradicional (100% verdadeiro). \nTema do Jantar: "${theme}". \nCom base ESTRITAMENTE e EXCLUSIVAMENTE nesta adega:\n${stock}\nCrie um cardápio clássico (Entrada, Principal, Sobremesa). Harmonize cada prato com a melhor escolha possível do estoque listado. Se a uva não for a ideal para a sobremesa, explique a ressalva científica com a verdade, mas indique qual do estoque sofre menos choque. \nResponda APENAS em código HTML (<h3>, <p>, <ul>, <li>) e use design de texto limpo.`;
+                const stock = currentWines.filter(w=>w.quantity>0).map(w => `- ${w.wineName} (${w.grape}, ${w.region})`).join('\n');
+                const prompt = `Tema: "${theme}". Estoque:\n${stock}\nCrie cardápio (Entrada, Principal, Sobremesa). Harmonize EXCLUSIVAMENTE com a adega e diga A VERDADE TÉCNICA. HTML (<h3>, <p>, <ul>, <li>).`;
                 const resp = await callGenerativeAI(prompt);
                 
                 modalContent.innerHTML = `
-                    <button class="close-modal-btn absolute top-6 right-6 text-stone-500 hover:text-white transition-colors bg-stone-900 border border-stone-800 rounded-full p-2">&times;</button>
-                    <h2 class="font-serif text-3xl text-blue-400 mb-6 border-b border-stone-800 pb-4 leading-tight">Cardápio Master:<br><span class="text-white text-2xl">${theme}</span></h2>
-                    <div class="text-stone-300 space-y-4 max-h-[55vh] overflow-y-auto custom-scrollbar pr-4 [&>h3]:text-white [&>h3]:font-serif [&>h3]:text-xl [&>h3]:mt-8 [&>h3]:mb-3 [&>ul]:list-disc [&>ul]:pl-5 [&>li]:mb-2 [&>li]:leading-relaxed">${resp}</div>`;
+                    ${getModalHeader('Menu Harmonizado', '🍽️')}
+                    <div class="px-4 pb-4 text-stone-300 space-y-3 max-h-[55vh] overflow-y-auto custom-scrollbar [&>h3]:text-white [&>h3]:font-serif [&>h3]:text-base [&>h3]:mt-4 [&>ul]:list-disc [&>ul]:pl-5 [&>li]:text-xs [&>p]:text-xs">
+                        <h3 class="text-blue-400 border-b border-stone-800 pb-2 mb-4">${theme}</h3>
+                        ${resp}
+                    </div>`;
                 openModal();
                 modalContent.querySelector('.close-modal-btn').onclick = closeModal;
             } catch (error) { showErrorModal(error.message); } finally { hideLoadingModal(); }
